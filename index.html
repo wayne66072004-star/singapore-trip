@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Singapore Trip | 家族旅行</title>
+
+    <!-- Tailwind CSS (HTTPS CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome (HTTPS CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+
+    <!--
+      ============================================================
+      設定檔（使用「相對路徑」，GitHub Pages 子目錄也能正確載入）
+      ============================================================
+      切勿寫成 "/config.js" —— 開頭的斜線會指向網域根目錄，
+      部署到 https://user.github.io/repo/ 時就會 404。
+    -->
+    <script src="config.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        muji: {
+                            bg: '#F5F5F0',
+                            white: '#FFFFFF',
+                            dark: '#333333',
+                            text: '#5C5C5C',
+                            border: '#E6E6E0',
+                            brown: '#8D7B68',
+                            lightbrown: '#C4B7A6',
+                            red: '#A35C5C',
+                            blue: '#5C7A99'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                        serif: ['"Noto Serif TC"', 'serif'],
+                    },
+                    boxShadow: {
+                        'muji': '0 2px 8px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F5F5F0;
+            color: #333333;
+            -webkit-tap-highlight-color: transparent;
+        }
+        ::-webkit-scrollbar { display: none; }
+        .tab-content { display: none; padding-bottom: 90px; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        input, textarea, select {
+            background-color: #FAFAFA;
+            color: #333;
+            border: 1px solid #E6E6E0;
+            border-radius: 6px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input:focus, textarea:focus { border-color: #8D7B68; background-color: #FFF; }
+
+        .btn-muji {
+            background-color: #8D7B68;
+            color: #FFF;
+            transition: opacity 0.2s;
+        }
+        .btn-muji:active { opacity: 0.8; }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute; left: -21px; top: 6px;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #E6E6E0;
+            border: 2px solid #FFF;
+        }
+        .timeline-item.highlight::before { background: #8D7B68; }
+        .timeline-item.medical::before { background: #5C7A99; }
+
+        .day-selector-container::-webkit-scrollbar { display: none; }
+        .day-selector-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* ---------- Google Maps 容器 ---------- */
+        .map-shell {
+            position: relative;
+            width: 100%;
+            height: 40vh;
+            overflow: hidden;
+            border-radius: 6px;
+        }
+        #google-map {
+            position: absolute;
+            inset: 0;
+            background-color: #EFEFE9;
+        }
+        /* Google 的資訊視窗改用我們的 Muji 樣式 */
+        .gm-style-iw-c { border-radius: 8px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important; padding: 0 !important; }
+        .gm-style-iw-d { padding: 10px 12px !important; overflow: hidden !important; }
+        .gm-style-iw-tc::after { background: #FFF !important; }
+        /* 把 Google 的 logo / 版權字放大到可讀 */
+        .gm-style .gmnoprint { opacity: .85; }
+
+        /* 浮在地圖上的按鈕 */
+        .map-reset-btn {
+            position: absolute;
+            left: 8px;
+            bottom: 8px;
+            z-index: 30;
+        }
+
+        /* ---------- 地圖狀態提示層 ---------- */
+        .map-status {
+            position: absolute;
+            inset: 0;
+            z-index: 40;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background:
+                repeating-linear-gradient(45deg, #F7F7F2 0 10px, #F2F2EC 10px 20px);
+        }
+        .map-status.show { display: flex; }
+        .map-status-card {
+            max-width: 340px;
+            width: 100%;
+            background: #FFF;
+            border: 1px solid #E6E6E0;
+            border-radius: 8px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.06);
+        }
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased h-screen flex flex-col overflow-hidden bg-muji-bg">
+
+    <!-- Header -->
+    <header class="bg-muji-white border-b border-muji-border p-4 z-50 flex justify-between items-end shadow-sm relative flex-shrink-0">
+        <div>
+            <h1 class="font-serif text-xl font-bold text-muji-dark tracking-wide">Singapore</h1>
+            <p class="text-xs text-muji-text mt-1">家族旅行 11.14 - 11.18</p>
+        </div>
+        <div class="text-[10px] text-muji-brown border border-muji-lightbrown rounded-md px-2 py-1 bg-muji-bg">
+            JX771 / JX772
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 relative" id="main-container">
+
+        <!-- Tab 1: PLAN -->
+        <section id="tab-plan" class="tab-content active">
+            <!-- Day Selector -->
+            <div class="day-selector-container overflow-x-auto whitespace-nowrap mb-6 pb-1 sticky top-0 bg-muji-bg z-40 py-2">
+                <div class="flex space-x-2" id="day-tabs"></div>
+            </div>
+
+            <!-- 行程時間軸容器 -->
+            <div id="itinerary-container" class="pl-4 border-l border-muji-border ml-2 space-y-8 min-h-[50vh]">
+                <!-- JS 動態生成 -->
+            </div>
+        </section>
+
+        <!-- Tab 6: MAP (List View) -->
+        <section id="tab-map" class="tab-content">
+            <!-- 內嵌於 Map 分頁中的地圖區塊 -->
+            <div class="sticky top-0 z-40 bg-muji-bg pt-2 pb-2">
+                <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-2 ml-1">行程地圖</h2>
+
+                <div class="map-shell border border-muji-border shadow-sm">
+                    <div id="google-map"></div>
+
+                    <button onclick="resetMapView()" class="map-reset-btn bg-muji-white text-muji-dark text-[10px] px-2 py-1 rounded shadow-sm border border-muji-border hover:bg-gray-50 flex items-center">
+                        <i class="fa-solid fa-expand mr-1"></i>重置全景
+                    </button>
+
+                    <!-- 金鑰未設定 / 載入失敗時的說明層 -->
+                    <div id="map-status" class="map-status">
+                        <div class="map-status-card">
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 rounded-full bg-muji-bg border border-muji-border flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i id="map-status-icon" class="fa-solid fa-triangle-exclamation text-muji-brown text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p id="map-status-title" class="text-[13px] font-bold text-muji-dark leading-snug mb-1">地圖尚未啟用</p>
+                                    <p id="map-status-desc" class="text-[11px] text-muji-text leading-relaxed"></p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <button onclick="retryMap()" class="flex-1 bg-muji-bg border border-muji-border text-muji-dark text-[11px] py-1.5 rounded-md active:bg-gray-100">
+                                    <i class="fa-solid fa-rotate-right mr-1"></i>重試
+                                </button>
+                                <a href="README.md" target="_blank" class="flex-1 text-center bg-muji-brown text-white text-[11px] py-1.5 rounded-md active:opacity-80">
+                                    <i class="fa-solid fa-book mr-1"></i>設定說明
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 pb-6">
+                <p class="text-xs text-muji-text mb-4"><i class="fa-solid fa-hand-pointer mr-1"></i>點擊下方列表，即可在上方地圖亮燈查看確切位置：</p>
+                <div id="map-locations-list" class="space-y-2">
+                    <!-- JS generated list -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: GUIDE -->
+        <section id="tab-guide" class="tab-content">
+            <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-6">深度導覽</h2>
+
+            <div class="bg-muji-white rounded-md overflow-hidden shadow-muji border border-muji-border mb-6">
+                <img src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&q=80&w=600" class="w-full h-40 object-cover" alt="Gardens by the Bay">
+                <div class="p-4">
+                    <h3 class="font-bold text-muji-dark text-lg mb-2">濱海灣花園 Gardens by the Bay</h3>
+                    <p class="text-sm text-muji-text leading-relaxed mb-3">
+                        擎天樹 (Supertree) 不僅是視覺造景，它們實際上是垂直花園，並具備收集雨水、太陽能發電，以及為冷室溫室通風的環保功能。晚間的燈光秀將結合原創音樂，帶來極具沉浸感的體驗。
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-muji-white rounded-md overflow-hidden shadow-muji border border-muji-border mb-6">
+                <img src="https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&q=80&w=600" class="w-full h-40 object-cover" alt="Singapore Zoo">
+                <div class="p-4">
+                    <h3 class="font-bold text-muji-dark text-lg mb-2">新加坡動物園</h3>
+                    <p class="text-sm text-muji-text leading-relaxed mb-3">
+                        世界知名的「開放式概念」動物園，利用隱藏的天然屏障（如植被、水溝）將遊客與動物隔開。園區極大，建議長輩務必全程搭乘遊園車。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: WALLET -->
+        <section id="tab-wallet" class="tab-content">
+            <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-6">記帳與匯率</h2>
+
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sm font-medium text-muji-dark">即時匯率 (SGD ➔ TWD)</span>
+                    <div class="flex items-center text-xs text-muji-text bg-muji-bg px-2 py-1 rounded border border-muji-border">
+                        <span id="display-rate">載入中...</span>
+                        <button onclick="fetchExchangeRate()" class="ml-2 text-muji-brown hover:text-muji-dark"><i class="fa-solid fa-rotate-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="text-xs text-muji-text block mb-1">計算機 (支援算式，如 50+10*2)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="calc-input" placeholder="輸入新幣金額或算式..." class="w-full p-2 text-sm">
+                        <button onclick="calculate()" class="bg-muji-bg border border-muji-border text-muji-dark px-4 rounded-md font-bold hover:bg-gray-100">=</button>
+                    </div>
+                    <div class="mt-2 text-right text-sm">
+                        台幣約：<span id="calc-result" class="font-bold text-muji-dark">NT$ 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-6">
+                <h3 class="text-sm font-medium text-muji-dark mb-3">新增支出</h3>
+                <input type="text" id="expense-name" placeholder="品項名稱 (如：松發肉骨茶)" class="w-full p-2 mb-3 text-sm">
+                <div class="flex gap-2 mb-3">
+                    <div class="relative w-full">
+                        <span class="absolute left-3 top-2 text-muji-text text-sm">S$</span>
+                        <input type="number" id="expense-amount" placeholder="金額" class="w-full p-2 pl-9 text-sm">
+                    </div>
+                    <label class="bg-muji-bg border border-muji-border text-muji-text px-4 py-2 rounded-md flex items-center justify-center cursor-pointer min-w-[50px] active:bg-gray-100">
+                        <i class="fa-solid fa-camera"></i>
+                        <input type="file" id="expense-photo" accept="image/*" class="hidden" onchange="previewPhoto(event)">
+                    </label>
+                </div>
+                <canvas id="photo-canvas" class="hidden"></canvas>
+                <img id="photo-preview" class="w-20 h-20 object-cover rounded-md mb-3 hidden border border-muji-border">
+                <button onclick="addExpense()" class="w-full btn-muji py-2 rounded-md text-sm font-medium">記錄</button>
+            </div>
+
+            <div class="flex justify-between items-end border-b border-muji-border pb-1 mb-3">
+                <h3 class="text-sm font-medium text-muji-dark">歷史紀錄</h3>
+                <span id="total-expense" class="text-xs text-muji-brown font-bold">總計: S$ 0</span>
+            </div>
+            <div id="expense-list" class="space-y-3">
+                <!-- 記帳紀錄由 JS 動態生成 -->
+            </div>
+        </section>
+
+        <!-- Tab 4: LISTS -->
+        <section id="tab-lists" class="tab-content">
+            <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-6">清單與備忘</h2>
+
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-6">
+                <h3 class="text-sm font-medium text-muji-dark mb-3"><i class="fa-solid fa-clipboard-list text-muji-brown mr-2"></i>行前準備 CheckList</h3>
+                <div id="checklist-container" class="space-y-3 mb-4">
+                    <!-- Checklists 動態產生 -->
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="new-check-item" placeholder="自訂新增物品..." class="w-full p-2 text-sm bg-muji-bg">
+                    <button onclick="addChecklistItem()" class="bg-muji-bg border border-muji-border text-muji-dark px-3 rounded-md active:bg-gray-100"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border">
+                <h3 class="text-sm font-medium text-muji-dark mb-3"><i class="fa-solid fa-pen text-muji-brown mr-2"></i>個人備忘錄</h3>
+                <textarea id="personal-notes" rows="5" class="w-full p-3 text-sm mb-3" placeholder="輸入備忘錄，網址會自動轉換為連結..."></textarea>
+                <button onclick="saveNotes(this)" class="w-full btn-muji py-2 rounded-md text-sm mb-4">儲存</button>
+                <div class="text-xs text-muji-text border-t border-muji-border pt-3">預覽區：</div>
+                <div id="notes-preview" class="text-sm text-muji-dark mt-2 break-words leading-relaxed whitespace-pre-wrap"></div>
+            </div>
+        </section>
+
+        <!-- Tab 5: INFO -->
+        <section id="tab-info" class="tab-content">
+            <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-6">實用資訊</h2>
+
+            <a href="https://www.weather.gov.sg/home/" target="_blank" rel="noopener" class="block bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-4 active:bg-gray-50 transition flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-muji-bg rounded-full flex items-center justify-center mr-3 border border-muji-border text-muji-brown">
+                        <i class="fa-solid fa-cloud-sun-rain"></i>
+                    </div>
+                    <span class="text-sm font-medium text-muji-dark">新加坡氣象局 (預報)</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-muji-text text-xs"></i>
+            </a>
+
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-4">
+                <h3 class="text-sm font-medium text-muji-red mb-3"><i class="fa-solid fa-phone mr-2"></i>當地緊急聯絡</h3>
+                <ul class="text-sm space-y-3 text-muji-dark">
+                    <li class="flex justify-between items-center border-b border-muji-bg pb-2">
+                        <span>警察 (Police)</span>
+                        <a href="tel:999" class="bg-muji-bg px-3 py-1 rounded-md text-muji-red border border-muji-border">999</a>
+                    </li>
+                    <li class="flex justify-between items-center border-b border-muji-bg pb-2">
+                        <span>救護車 / 消防</span>
+                        <a href="tel:995" class="bg-muji-bg px-3 py-1 rounded-md text-muji-red border border-muji-border">995</a>
+                    </li>
+                    <li class="flex justify-between items-center">
+                        <span>駐星辦事處 (急難救助)</span>
+                        <a href="tel:+6565000100" class="bg-muji-bg px-3 py-1 rounded-md text-muji-dark border border-muji-border">+65 6500 0100</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border">
+                <h3 class="text-sm font-medium text-muji-brown mb-3"><i class="fa-solid fa-circle-exclamation mr-2"></i>禁忌與規定</h3>
+                <ul class="text-sm space-y-2 text-muji-text list-disc pl-4 leading-relaxed">
+                    <li><strong class="text-muji-dark">口香糖禁令：</strong> 嚴禁攜帶口香糖入境。</li>
+                    <li><strong class="text-muji-dark">交通工具禁食：</strong> MRT 捷運車廂及站內全面禁止飲食（含喝水），違者面臨高額罰款。</li>
+                    <li><strong class="text-muji-dark">市容法規：</strong> 亂丟垃圾、隨地吐痰、未沖馬桶皆會被重罰。</li>
+                    <li><strong class="text-muji-dark">醫療安檢：</strong> 心臟節律器患者過安檢務必出示識別卡，要求人工手檢；腹膜透析液建議攜帶完整處方箋證明。</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bg-muji-white border-t border-muji-border fixed bottom-0 w-full z-50 px-2 py-2 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
+        <ul class="flex justify-between items-center text-muji-text text-[10px] font-medium">
+            <li class="flex-1">
+                <button class="nav-btn w-full flex flex-col items-center py-1 text-muji-brown transition-colors" data-target="tab-plan">
+                    <i class="fa-solid fa-list-ul text-lg mb-1"></i><span>行程</span>
+                </button>
+            </li>
+            <li class="flex-1">
+                <button class="nav-btn w-full flex flex-col items-center py-1 transition-colors" data-target="tab-map">
+                    <i class="fa-solid fa-map text-lg mb-1"></i><span>地圖</span>
+                </button>
+            </li>
+            <li class="flex-1">
+                <button class="nav-btn w-full flex flex-col items-center py-1 transition-colors" data-target="tab-guide">
+                    <i class="fa-solid fa-book-open text-lg mb-1"></i><span>導覽</span>
+                </button>
+            </li>
+            <li class="flex-1">
+                <button class="nav-btn w-full flex flex-col items-center py-1 transition-colors" data-target="tab-wallet">
+                    <i class="fa-solid fa-calculator text-lg mb-1"></i><span>記帳</span>
+                </button>
+            </li>
+            <li class="flex-1">
+                <button class="nav-btn w-full flex flex-col items-center py-1 transition-colors" data-target="tab-lists">
+                    <i class="fa-solid fa-check-square text-lg mb-1"></i><span>清單</span>
+                </button>
+            </li>
+            <li class="flex-1">
+                <button class="nav-btn w-full flex flex-col items-center py-1 transition-colors" data-target="tab-info">
+                    <i class="fa-solid fa-circle-info text-lg mb-1"></i><span>資訊</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        const itineraryData = [{"day": "Day 1 (11/14 週六)", "title": "", "events": [{"time": "13:15", "title": "抵達新加坡 (航班 JX771 抵達樟宜機場，領取 SIM 卡)", "desc": "🚶 機場內步行<br>⚠️ 醫療：長輩請主動出示節律器證明，要求人工手檢通關。", "type": "medical", "locId": "loc-airport"}, {"time": "14:15", "title": "前往飯店 ", "desc": "🚕 Grab (1台13人座小巴士)：機場搭車直達飯店大廳 (車程約 25 分)。<br>行李多且有醫療物資，強烈建議直接搭車直達。", "type": "medical", "locId": "loc-hotel"}, {"time": "15:00", "title": "辦理入住 (PARKROYAL COLLECTION Marina Bay)", "desc": "6 Raffles Blvd, 新加坡 039594", "type": "normal", "locId": "loc-hotel"}, {"time": "15:30", "title": "💧 午後透析休息", "desc": "⚠️ 醫療：長輩於房內換液 2.5% (撐 4~6小時)。", "type": "medical", "locId": "loc-hotel"}, {"time": "16:00", "title": "採買晚餐", "desc": "🚶 連通道步行：飯店走室內連通道 → Marina Square 美食街 (單程 3 分鐘)。<br>小隊出動，長輩留房休息。", "type": "normal", "locId": "loc-marina"}, {"time": "16:30", "title": "飯店晚餐", "desc": "", "type": "normal", "locId": "loc-hotel"}, {"time": "18:15", "title": "濱海灣散步", "desc": "🚶 景觀步道步行：飯店出發 → 經雙螺旋橋 → 濱海灣花園 (全程約 15 分鐘)。<br>傍晚無烈日，慢慢散步。", "type": "normal", "locId": "loc-gardens"}, {"time": "19:45", "title": "🌟 擎天樹燈光秀", "desc": "第一場次 (約 15 分鐘)。", "type": "highlight", "locId": "loc-gardens"}, {"time": "20:15", "title": "前往水舞區", "desc": "🚶 空橋步行：濱海灣花園 → 穿過金沙酒店內部通道 → 金沙濱水廣場 (全程約 10-12 分鐘)。<br>平緩好走。", "type": "normal", "locId": "loc-spectra"}, {"time": "21:00", "title": "🌟 金沙水舞秀", "desc": "第二場次 (約 15 分鐘)。週六有加開22:00場次。", "type": "highlight", "locId": "loc-spectra"}, {"time": "21:20", "title": "分頭行動 (宵夜)", "desc": "🚶 長輩回房：水舞區 → 走雙螺旋橋回飯店 (約 15 分鐘)。<br>🚇 小隊搭 MRT：水舞區步行(3分) → Bayfront 站搭藍線至 Downtown 站(1站，2分) → 步行(3分)至老巴剎。<br>兵分兩路，長輩先回去休息。", "type": "normal", "locId": "loc-laupasat"}, {"time": "21:40", "title": "💧 晚間透析緩衝", "desc": "⚠️ 醫療：長輩回房換液 1.5%，洗澡休息。", "type": "medical", "locId": "loc-hotel"}, {"time": "22:15", "title": "宵夜時間", "desc": "小隊將沙嗲帶回房內共享。", "type": "normal", "locId": "loc-hotel"}, {"time": "23:30", "title": "💧 睡前透析", "desc": "⚠️ 醫療：換液 2.5%，就寢。", "type": "medical", "locId": "loc-hotel"}]}, {"day": "Day 2 (11/15 週日)", "title": "", "events": [{"time": "08:00", "title": "💧 晨間長效透析", "desc": "⚠️ 醫療：換液愛多 Extraneal。", "type": "medical", "locId": "loc-hotel"}, {"time": "08:30", "title": "採買早餐", "desc": "🚶 市區步行：飯店走室內通道或地下街 → 亞坤 (單程約 5-7 分鐘)。<br>長輩在房內邊換液邊吃早餐。", "type": "normal", "locId": "loc-yakun"}, {"time": "09:30", "title": "地標巡禮 (魚尾獅公園拍照)", "desc": "🚶 市區步行：飯店出發 → 經濱海橋 → 魚尾獅公園 (全程約 12-15 分鐘)。<br>趁早晨涼爽時散步。", "type": "normal", "locId": "loc-merlion"}, {"time": "11:45", "title": "前往新達城", "desc": "🚶 地下通道步行：魚尾獅 → 地下通道(CityLink Mall)避暑 → Suntec City (全程約 15 分鐘)。<br>善用室內冷氣通道，避免日曬。", "type": "normal", "locId": "loc-suntec"}, {"time": "12:15", "title": "午餐：松發肉骨茶", "desc": "位於 Suntec B1。⚠️ 飲食：長輩吃肉，湯少喝。", "type": "medical", "locId": "loc-songfa"}, {"time": "13:30", "title": "財富之泉打卡", "desc": "🚶 商場內步行：餐廳走到戶外中庭 (約 3 分鐘)。<br>新達城商場逛街", "type": "normal", "locId": "loc-suntec"}, {"time": "14:30", "title": "🦆 鴨子船觀光", "desc": "🚶 報到處步行：財富之泉走回商場 DUCKtours 櫃檯 (約 3 分鐘)。<br>免走路輕鬆水陸觀光 1 小時。", "type": "normal", "locId": "loc-suntec"}, {"time": "15:45", "title": "返回飯店", "desc": "🚶 過馬路步行：Suntec City 過馬路 → 飯店 (約 5 分鐘)。<br>兩棟建築幾乎相鄰。", "type": "normal", "locId": "loc-hotel"}, {"time": "16:30", "title": "💧 午後透析休息", "desc": "⚠️ 醫療：長輩換液 2.5% 午休。", "type": "medical", "locId": "loc-hotel"}, {"time": "18:00", "title": "晚餐：珍寶海鮮", "desc": "🚇 MRT轉乘+步行 (共約16分)：飯店步行(3分) → Promenade 站搭藍線至 Fort Canning 站(5站，10分) → A出口步行(3分)至餐廳。<br>🚕 Grab 備案：飯店直達餐廳約 10 分鐘。<br>視長輩剛睡醒的體力狀況，隨時切換叫 Grab。", "type": "highlight", "locId": "loc-jumbo"}, {"time": "20:30", "title": "💧 晚間透析緩衝", "desc": "🚇 搭 MRT 回房 (共約16分)：餐廳步行(3分) → Fort Canning 搭藍線回 Promenade(5站，10分) → 步行(3分)回房。<br>⚠️ 醫療：餐後回房換液 1.5%。", "type": "medical", "locId": "loc-hotel"}, {"time": "23:00", "title": "💧 睡前透析", "desc": "⚠️ 醫療：換液 2.5%，就寢。", "type": "medical", "locId": "loc-hotel"}]}, {"day": "Day 3 (11/16 週一)", "title": "", "events": [{"time": "07:00", "title": "💧 晨間長效透析", "desc": "⚠️ 醫療：換液愛多 Extraneal。", "type": "medical", "locId": "loc-hotel"}, {"time": "08:30", "title": "出發動物園", "desc": "🚕 Grab (2台4人座OR 1台13人座)：飯店搭車直達新加坡動物園大門 (車程約 35 分)。<br>搭 MRT 轉公車需走遠路且超過 1 小時，長途強烈建議包 Grab。", "type": "highlight", "locId": "loc-zoo"}, {"time": "09:15", "title": "動物園漫遊", "desc": "🚎 園內交通：以「遊園車」代步各展區，下車後各區步行約 5-10 分鐘。<br>⚠️ 醫療/行動：長輩務必搭乘遊園車保留體力。", "type": "medical", "locId": "loc-zoo"}, {"time": "13:30", "title": "離開動物園", "desc": "🚕 Grab (2台4人座OR 1台13人座)：動物園搭車直達飯店 (車程約 35 分)。", "type": "highlight", "locId": "loc-hotel"}, {"time": "14:30", "title": "💧 午後透析休息", "desc": "⚠️ 醫療：長輩回房換液 2.5% 午休避暑。", "type": "medical", "locId": "loc-hotel"}, {"time": "15:30", "title": "小印度區", "desc": "🚇 MRT轉乘+步行 (共約12分)：飯店步行(3分) → Promenade 站搭藍線至 Little India 站(3站，6分) → C出口步行(3分)至結霜橋叻沙。<br>第一站先衝叻沙攤位。", "type": "normal", "locId": "loc-laksa"}, {"time": "16:15", "title": "印度文化體驗", "desc": "🚶 區域內步行：叻沙步行至竹腳中心 / 印度廟 (約 5 分鐘)。", "type": "normal", "locId": "loc-tekka"}, {"time": "17:00", "title": "甘榜格南巡禮", "desc": "🚇 MRT轉乘+步行 (共約15分)：印度廟步行(4分) → Little India 站搭藍線至 Bugis 站(2站，4分) → 步行(7分)至蘇丹回教堂。<br>可沿途逛武吉士街採買伴手禮。", "type": "normal", "locId": "loc-sultan"}, {"time": "19:00", "title": "💧 晚間透析緩衝", "desc": "🚇 搭 MRT 回房 (共約10分)：武吉士商圈步行(5分) → Bugis 站搭藍線至 Promenade 站(1站，2分) → 步行(3分)回房。<br>⚠️ 醫療：長輩回房換液 1.5%。", "type": "medical", "locId": "loc-hotel"}, {"time": "19:30", "title": "簡單晚餐", "desc": "🚶 步行：飯店走室內連通至附近商場 (3-5 分鐘)。<br>或是於BUGIS站附近吃晚餐", "type": "normal", "locId": "loc-sultan"}, {"time": "22:30", "title": "💧 睡前透析", "desc": "⚠️ 醫療：換液 2.5%，就寢。", "type": "medical", "locId": "loc-hotel"}]}, {"day": "Day 4 (11/17 週二)", "title": "", "events": [{"time": "08:00", "title": "💧 晨間長效透析", "desc": "⚠️ 醫療：換液愛多 Extraneal。", "type": "medical", "locId": "loc-hotel"}, {"time": "08:45", "title": "前往港灣纜車站", "desc": "🚇 MRT轉乘+步行 (共約25分)：飯店步行(3分) → Promenade 站搭藍線至 Chinatown 站(4站，8分) → 站內轉紫線(3分)至 HarbourFront 站(2站，4分) → B出口步行(7分)至 HarbourFront Tower 2 纜車站。", "type": "normal", "locId": "loc-cablecar"}, {"time": "09:30", "title": "🚡 搭乘纜車入島", "desc": "🚡 纜車：花柏山線直達聖淘沙站 (空中車程 15 分鐘)。", "type": "highlight", "locId": "loc-sentosa"}, {"time": "10:00", "title": "聖淘沙玩樂", "desc": "🚶 島內步行與接駁：纜車站步行(5分)至滑車區；或轉乘免費海灘接駁車(5分)至巴拉灣海灘。<br>⚠️ 安全：注意滑車刺激度，長輩有節律器可在一旁等候拍照。", "type": "medical", "locId": "loc-sentosa"}, {"time": "12:30", "title": "前往牛車水", "desc": "🚕 Grab (2台)：聖淘沙島內搭車直達牛車水麥士威熟食中心 (車程約 15 分鐘)。<br>極重要：8 人出島轉乘兩次捷運非常消粍體力，花錢搭車直奔牛車水避暑最明智。", "type": "highlight", "locId": "loc-maxwell"}, {"time": "13:00", "title": "採買午餐", "desc": "🚶 區域內步行：小隊在麥士威中心內買天天海南雞飯與老伴豆花。<br>長輩在對面或陰涼通風處坐著等候，不參與排隊。", "type": "normal", "locId": "loc-maxwell"}, {"time": "14:30", "title": "牛車水巡禮", "desc": "🚶 商圈步行：麥士威中心過馬路(2分)至佛牙寺，周圍老街步行距離皆在 5 分鐘內。", "type": "normal", "locId": "loc-buddha"}, {"time": "15:30", "title": "💧 午後透析午睡", "desc": "🚇 搭 MRT 回房 (共約16分)：佛牙寺步行(5分)至 Chinatown 站 → 搭藍線至 Promenade 站(4站，8分) → 步行(3分)回房。<br>⚠️ 醫療：長輩換液 2.5% 午休。", "type": "medical", "locId": "loc-hotel"}, {"time": "18:00", "title": "晚餐：了凡油雞飯", "desc": "🚇 MRT轉乘+步行 (共約15分)：飯店步行(3分) → Promenade 站搭藍線回 Chinatown 站(4站，8分) → 步行(4分)至總店。<br>若長輩累了也可由小隊去外帶回房。", "type": "normal", "locId": "loc-liaofan"}, {"time": "20:30", "title": "💧 晚間透析緩衝", "desc": "🚇 搭 MRT 回房：循原路徑搭藍線返回。<br>⚠️ 醫療：長輩回房換液 1.5%。", "type": "medical", "locId": "loc-hotel"}, {"time": "23:30", "title": "💧 睡前透析", "desc": "⚠️ 醫療：換液 2.5%，就寢。", "type": "medical", "locId": "loc-hotel"}]}, {"day": "Day 5 (11/18 週三)", "title": "", "events": [{"time": "07:00", "title": "💧 晨間長效透析", "desc": "⚠️ 醫療：換液愛多 Extraneal，直接撐到抵達台灣。", "type": "medical", "locId": "loc-hotel"}, {"time": "08:30", "title": "飯店早餐", "desc": "", "type": "normal", "locId": "loc-hotel"}, {"time": "11:00", "title": "退房前往機場", "desc": "🚕 Grab (1台13人座小巴士)：飯店搭車直達樟宜機場離境大廳 (車程約 25 分)。<br>帶著行李，搭車直達最輕鬆。", "type": "highlight", "locId": "loc-airport"}, {"time": "11:45", "title": "機場報到", "desc": "🚶 機場大廳步行<br>⚠️ 醫療：長輩再次提醒地勤人工手檢節律器。", "type": "medical", "locId": "loc-airport"}, {"time": "12:15", "title": "星耀樟宜 (Jewel)", "desc": "🚶 機場空橋步行：出境大廳走室內連通道至 Jewel 星耀樟宜 (單程約 5-10 分鐘，有平面手扶梯代步)。", "type": "normal", "locId": "loc-jewel"}, {"time": "14:45", "title": "返家", "desc": "✈️ 飛機 (飛行約 4.5 小時)。<br>⚠️ 醫療：抵達後長輩接續晚間透析。", "type": "medical", "locId": "loc-hotel"}]}];
+
+        let currentDayIndex = 0;
+        let currentSgdRate = 23.5;
+
+        // --- 地圖資料 ---
+        const mapLocations = [
+            { id: 'loc-hotel', day: '住宿', name: 'PARKROYAL COLLECTION Marina Bay', lat: 1.2913, lng: 103.8577 },
+            { id: 'loc-airport', day: 'Day 1 / 5', name: '樟宜機場 (Changi Airport)', lat: 1.3644, lng: 103.9915 },
+            { id: 'loc-marina', day: 'Day 1', name: 'Marina Square', lat: 1.2913, lng: 103.8566 },
+            { id: 'loc-gardens', day: 'Day 1', name: '濱海灣花園', lat: 1.2816, lng: 103.8636 },
+            { id: 'loc-spectra', day: 'Day 1', name: '金沙水舞廣場', lat: 1.2838, lng: 103.8591 },
+            { id: 'loc-laupasat', day: 'Day 1', name: '老巴剎', lat: 1.2806, lng: 103.8504 },
+            { id: 'loc-yakun', day: 'Day 2', name: '亞坤咖椰吐司', lat: 1.2810, lng: 103.8483 },
+            { id: 'loc-merlion', day: 'Day 2', name: '魚尾獅公園', lat: 1.2868, lng: 103.8545 },
+            { id: 'loc-suntec', day: 'Day 2', name: '新達城 / 鴨子船', lat: 1.2946, lng: 103.8587 },
+            { id: 'loc-songfa', day: 'Day 2', name: '松發肉骨茶', lat: 1.2935, lng: 103.8560 },
+            { id: 'loc-jumbo', day: 'Day 2', name: '珍寶海鮮', lat: 1.2897, lng: 103.8447 },
+            { id: 'loc-zoo', day: 'Day 3', name: '新加坡動物園', lat: 1.4043, lng: 103.7930 },
+            { id: 'loc-laksa', day: 'Day 3', name: '結霜橋叻沙', lat: 1.3060, lng: 103.8560 },
+            { id: 'loc-tekka', day: 'Day 3', name: '竹腳中心', lat: 1.3064, lng: 103.8505 },
+            { id: 'loc-sultan', day: 'Day 3', name: '蘇丹回教堂', lat: 1.3023, lng: 103.8590 },
+            { id: 'loc-cablecar', day: 'Day 4', name: '港灣纜車站', lat: 1.2655, lng: 103.8202 },
+            { id: 'loc-sentosa', day: 'Day 4', name: '聖淘沙滑車', lat: 1.2494, lng: 103.8238 },
+            { id: 'loc-maxwell', day: 'Day 4', name: '麥士威熟食中心', lat: 1.2803, lng: 103.8447 },
+            { id: 'loc-buddha', day: 'Day 4', name: '佛牙寺', lat: 1.2813, lng: 103.8443 },
+            { id: 'loc-liaofan', day: 'Day 4', name: '了凡油雞飯', lat: 1.2826, lng: 103.8437 },
+            { id: 'loc-jewel', day: 'Day 5', name: '星耀樟宜 (Jewel)', lat: 1.3602, lng: 103.9897 }
+        ];
+
+        /* ==========================================================
+         *  Google Maps 載入與初始化
+         * ========================================================== */
+
+        const GM = {
+            map: null,
+            infoWindow: null,
+            markers: new Map(),      // id -> google.maps.Marker
+            initialized: false,
+            loading: false,
+            loadPromise: null,
+            tilesLoaded: false,
+            tileTimer: null
+        };
+
+        const MUJI_MAP_STYLE = [
+            { elementType: 'geometry', stylers: [{ color: '#F5F5F0' }] },
+            { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+            { elementType: 'labels.text.fill', stylers: [{ color: '#6B6B63' }] },
+            { elementType: 'labels.text.stroke', stylers: [{ color: '#F5F5F0' }, { weight: 2 }] },
+            { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#E0E0D8' }] },
+            { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#4A4A44' }] },
+            { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#EEF0E8' }] },
+            { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#E9EBE2' }] },
+            { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#8A8A80' }] },
+            { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#DFE6D5' }] },
+            { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#FFFFFF' }] },
+            { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#E6E6E0' }] },
+            { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9A9A90' }] },
+            { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#F0ECE4' }] },
+            { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#E8E6E0' }] },
+            { featureType: 'transit', elementType: 'labels.text.fill', stylers: [{ color: '#9A9A90' }] },
+            { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#CDD9E0' }] },
+            { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#8FA4B3' }] }
+        ];
+
+        function getConfig() {
+            return (window.APP_CONFIG && typeof window.APP_CONFIG === 'object') ? window.APP_CONFIG : {};
+        }
+
+        function getApiKey() {
+            const key = getConfig().GOOGLE_MAPS_API_KEY;
+            return (typeof key === 'string') ? key.trim() : '';
+        }
+
+        /** 判斷是否仍是預設佔位符（尚未填入真的 Key） */
+        function isPlaceholderKey(key) {
+            if (!key) return true;
+            if (key.indexOf('YOUR_') === 0) return true;
+            if (key.indexOf('_HERE') !== -1) return true;
+            if (key.indexOf('PASTE') !== -1) return true;
+            if (key.length < 20) return true;
+            return false;
+        }
+
+        /** 顯示地圖狀態說明層 */
+        function showMapStatus(kind, extra) {
+            const el = document.getElementById('map-status');
+            const iconEl = document.getElementById('map-status-icon');
+            const titleEl = document.getElementById('map-status-title');
+            const descEl = document.getElementById('map-status-desc');
+            if (!el) return;
+
+            const MESSAGES = {
+                nokey: {
+                    icon: 'fa-key',
+                    title: '尚未設定 Google Maps API Key',
+                    desc: '請打開 config.js，把 GOOGLE_MAPS_API_KEY 换成你自己的金鑰（申請方式與 referrer 設定請見 README.md）。其他分頁功能完全不受影響。'
+                },
+                file: {
+                    icon: 'fa-file',
+                    title: '請改用 http(s) 開啟本頁',
+                    desc: '以 file:// 直接雙擊開啟時，瀏覽器不會送出 Referer，Google 會拒絕授權。請執行 python3 -m http.server 8080 後改用 http://localhost:8080 開啟。'
+                },
+                auth: {
+                    icon: 'fa-ban',
+                    title: '金鑰被 Google 拒絕 (RefererNotAllowed)',
+                    desc: '請到 Cloud Console → API 和服務 → 憑證 → 你的 Key → 網站限制，加入 https://你的帳號.github.io/* 或 *.github.io/*，並且在「API 限制」勾選 Maps JavaScript API。'
+                },
+                api: {
+                    icon: 'fa-plug',
+                    title: 'Maps JavaScript API 未啟用',
+                    desc: '請到 Cloud Console → API 和服務 → 已啟用的 API，確認「Maps JavaScript API」已啟用，且已綁定計費帳戶。'
+                },
+                network: {
+                    icon: 'fa-wifi',
+                    title: '無法載入 Google Maps',
+                    desc: 'maps.googleapis.com 連線失敗。請檢查網路，或確認沒有廣告阻擋器 / 防火牆 / 校園網路阻擋 Google 服務。'
+                },
+                tiles: {
+                    icon: 'fa-map',
+                    title: '地圖已初始化，但圖磚未載入',
+                    desc: '程式載入成功但底圖圖磚空白，通常是金鑰授權或計費問題。請確認：① 金鑰的網站限制已加入 https://*.github.io/* ② Maps JavaScript API 已啟用 ③ 已綁定計費帳戶。'
+                }
+            };
+
+            const msg = MESSAGES[kind] || MESSAGES.nokey;
+            iconEl.className = 'fa-solid ' + msg.icon + ' text-muji-brown text-sm';
+            titleEl.textContent = msg.title;
+            descEl.textContent = extra ? extra : msg.desc;
+            el.classList.add('show');
+        }
+
+        function hideMapStatus() {
+            const el = document.getElementById('map-status');
+            if (el) el.classList.remove('show');
+        }
+
+        /** 動態載入 Google Maps JavaScript API */
+        function loadGoogleMapsSdk() {
+            if (window.google && window.google.maps) return Promise.resolve();
+            if (GM.loadPromise) return GM.loadPromise;
+
+            const cfg = getConfig();
+            const key = getApiKey();
+            const language = cfg.LOCALE || 'zh-TW';
+            const region = cfg.REGION || 'SG';
+            const timeoutMs = cfg.LOAD_TIMEOUT_MS || 15000;
+
+            GM.loadPromise = new Promise(function (resolve, reject) {
+                let settled = false;
+
+                const finishOk = function () {
+                    if (settled) return;
+                    settled = true;
+                    resolve();
+                };
+                const finishErr = function (code) {
+                    if (settled) return;
+                    settled = true;
+                    reject(new Error(code));
+                };
+
+                // Google 授權失敗（referrer 不符、Key 無效、API 未啟用）時會呼叫這個全域函式
+                window.gm_authFailure = function () {
+                    finishErr('auth');
+                };
+
+                const cbName = '__gmapsReady_' + Date.now();
+                window[cbName] = finishOk;
+
+                const params = new URLSearchParams({
+                    key: key,
+                    libraries: 'marker',
+                    language: language,
+                    region: region,
+                    loading: 'async',
+                    callback: cbName,
+                    v: 'weekly'
+                });
+
+                const script = document.createElement('script');
+                script.src = 'https://maps.googleapis.com/maps/api/js?' + params.toString();
+                script.async = true;
+                script.defer = true;
+
+                script.onerror = function () { finishErr('network'); };
+
+                document.head.appendChild(script);
+
+                // 逾時保護：避免網路卡住時畫面一直空白
+                setTimeout(function () { finishErr('timeout'); }, timeoutMs);
+            });
+
+            return GM.loadPromise;
+        }
+
+        /** 產生 Muji 風格圓點圖示（SVG，不需額外圖檔，也不會有 404） */
+        function makeDotIcon(active) {
+            const size = active ? 26 : 15;
+            const color = active ? '#A35C5C' : '#8D7B68';
+            const ring = active ? 3 : 2;
+            const halo = active
+                ? '<circle cx="13" cy="13" r="11" fill="none" stroke="#A35C5C" stroke-opacity="0.28" stroke-width="2"/>'
+                : '';
+            const svg =
+                '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 26 26">' +
+                halo +
+                '<circle cx="13" cy="13" r="' + (9 - ring / 2) + '" fill="' + color + '" stroke="#FFFFFF" stroke-width="' + ring + '"/>' +
+                '</svg>';
+            return {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+                scaledSize: new google.maps.Size(size, size),
+                anchor: new google.maps.Point(size / 2, size / 2)
+            };
+        }
+
+        function buildInfoHtml(loc) {
+            const wrap = document.createElement('div');
+            wrap.style.fontFamily = "'Noto Sans TC', sans-serif";
+            wrap.style.maxWidth = '200px';
+            wrap.innerHTML =
+                '<b style="color:#333; font-size:14px; display:block; margin-bottom:2px;">' + loc.name + '</b>' +
+                '<span style="color:#8D7B68; font-size:11px; font-weight:700; letter-spacing:.02em;">' + loc.day + '</span>';
+            return wrap;
+        }
+
+        /** 建立地圖（僅在 Map 分頁首次開啟時呼叫） */
+        function initMap() {
+            if (GM.initialized) return;
+            if (GM.loading) return;
+
+            const mapEl = document.getElementById('google-map');
+            if (!mapEl || mapEl.clientHeight === 0) return;
+
+            // 狀況 0：以 file:// 開啟
+            if (location.protocol === 'file:') {
+                showMapStatus('file');
+                return;
+            }
+
+            // 狀況 1：尚未填入 Key
+            if (isPlaceholderKey(getApiKey())) {
+                showMapStatus('nokey');
+                return;
+            }
+
+            GM.loading = true;
+
+            loadGoogleMapsSdk().then(function () {
+                try {
+                    createMapInstance();
+                    hideMapStatus();
+                    GM.initialized = true;
+                } catch (err) {
+                    GM.loading = false;
+                    GM.loadPromise = null;
+                    showMapStatus('api', '地圖初始化失敗：' + (err && err.message ? err.message : err));
+                }
+            }).catch(function (err) {
+                GM.loading = false;
+                GM.loadPromise = null;
+                const code = err && err.message;
+                if (code === 'auth' || code === 'authFailure' || code === 'RefererNotAllowedMapError') {
+                    showMapStatus('auth');
+                } else {
+                    showMapStatus('network');
+                }
+            });
+        }
+
+        function createMapInstance() {
+            const cfg = getConfig();
+
+            const mapOptions = {
+                center: cfg.DEFAULT_CENTER || { lat: 1.2913, lng: 103.8577 },
+                zoom: cfg.DEFAULT_ZOOM || 12,
+                disableDefaultUI: true,
+                zoomControl: true,
+                zoomControlOptions: { position: google.maps.ControlPosition.TOP_RIGHT },
+                clickableIcons: false,
+                gestureHandling: 'greedy',
+                backgroundColor: '#F5F5F0'
+            };
+
+            // 有 Map ID 時使用雲端地圖樣式（styles 會被忽略）
+            if (cfg.MAP_ID) {
+                mapOptions.mapId = cfg.MAP_ID;
+            } else {
+                mapOptions.styles = MUJI_MAP_STYLE;
+            }
+
+            GM.map = new google.maps.Map(document.getElementById('google-map'), mapOptions);
+
+            GM.infoWindow = new google.maps.InfoWindow({
+                pixelOffset: new google.maps.Size(0, -4),
+                disableAutoPan: false
+            });
+
+            mapLocations.forEach(function (loc) {
+                const marker = new google.maps.Marker({
+                    position: { lat: loc.lat, lng: loc.lng },
+                    map: GM.map,
+                    title: loc.name,
+                    icon: makeDotIcon(false),
+                    optimized: false,
+                    zIndex: 1
+                });
+
+                marker.addListener('click', function () {
+                    highlightMapMarker(loc.id, false);
+                });
+
+                GM.markers.set(loc.id, marker);
+            });
+
+            fitAllMarkers(false);
+
+            // 分頁切換後讓 Google Maps 重新量測尺寸
+            google.maps.event.trigger(GM.map, 'resize');
+
+            /*
+             * 圖磚健康檢查
+             * ------------------------------------------------------------
+             * Google 在金鑰無效 / referrer 不符時，有時不會觸發 gm_authFailure，
+             * 而是「SDK 正常載入、地圖物件建立成功，但底圖圖磚全部是壞的」，
+             * 使用者只看到一片空白。因此這裡主動監看 tilesloaded：
+             * 8 秒內沒收到就顯示圖磚錯誤提示。
+             */
+            GM.tilesLoaded = false;
+            const tilesListener = GM.map.addListener('tilesloaded', function () {
+                GM.tilesLoaded = true;
+                google.maps.event.removeListener(tilesListener);
+                if (GM.tileTimer) { clearTimeout(GM.tileTimer); GM.tileTimer = null; }
+            });
+
+            if (GM.tileTimer) clearTimeout(GM.tileTimer);
+            GM.tileTimer = setTimeout(function () {
+                if (!GM.tilesLoaded) showMapStatus('tiles');
+            }, 8000);
+        }
+
+        function fitAllMarkers(animate) {
+            if (!GM.map || !window.google) return;
+            const bounds = new google.maps.LatLngBounds();
+            GM.markers.forEach(function (m) {
+                bounds.extend(m.getPosition());
+            });
+            if (bounds.isEmpty()) return;
+
+            GM.map.fitBounds(bounds, { top: 50, right: 40, bottom: 40, left: 40 });
+            if (!animate) GM.map.setZoom(GM.map.getZoom());
+        }
+
+        /** 使用者按下「重試」 */
+        function retryMap() {
+            GM.initialized = false;
+            GM.loading = false;
+            GM.loadPromise = null;
+            GM.tilesLoaded = false;
+            if (GM.tileTimer) { clearTimeout(GM.tileTimer); GM.tileTimer = null; }
+            if (window.google && window.google.maps && document.getElementById('google-map')) {
+                try { createMapInstance(); hideMapStatus(); GM.initialized = true; return; } catch (e) { /* 繼續往下重載 */ }
+            }
+            initMap();
+        }
+
+        function renderMapList() {
+            const container = document.getElementById('map-locations-list');
+            let html = '';
+            mapLocations.forEach(function (loc) {
+                html += `
+                <button data-loc-id="${loc.id}" onclick="highlightMapMarker('${loc.id}')" class="map-list-btn w-full text-left bg-white p-3 rounded-md border border-muji-border shadow-sm active:bg-gray-50 flex items-center justify-between transition-colors mb-2">
+                    <div>
+                        <span class="text-[10px] bg-muji-bg text-muji-brown px-1.5 py-0.5 rounded border border-muji-border mr-2">${loc.day}</span>
+                        <span class="text-sm font-medium text-muji-dark">${loc.name}</span>
+                    </div>
+                    <i class="fa-solid fa-location-dot text-muji-text text-xs pointer-icon"></i>
+                </button>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function clearAllHighlights() {
+            GM.markers.forEach(function (m) {
+                m.setIcon(makeDotIcon(false));
+                m.setZIndex(1);
+            });
+            if (GM.infoWindow) GM.infoWindow.close();
+
+            document.querySelectorAll('.map-list-btn').forEach(function (btn) {
+                btn.classList.remove('border-muji-red', 'bg-red-50');
+                btn.classList.add('border-muji-border', 'bg-white');
+                const ico = btn.querySelector('.pointer-icon');
+                if (ico) ico.classList.replace('text-muji-red', 'text-muji-text');
+            });
+        }
+
+        function resetMapView() {
+            if (!GM.map) return;
+            clearAllHighlights();
+            fitAllMarkers(true);
+        }
+
+        function highlightMapMarker(id, doPan) {
+            const pan = (doPan === undefined) ? true : doPan;
+            const loc = mapLocations.find(function (l) { return l.id === id; });
+
+            // 若地圖還沒好（例如 Key 未設定），仍讓清單可以高亮，只是不移動地圖
+            if (!GM.map || !GM.markers.has(id)) {
+                document.querySelectorAll('.map-list-btn').forEach(function (btn) {
+                    const isThis = btn.getAttribute('data-loc-id') === id;
+                    btn.classList.toggle('border-muji-red', isThis);
+                    btn.classList.toggle('bg-red-50', isThis);
+                    btn.classList.toggle('border-muji-border', !isThis);
+                    btn.classList.toggle('bg-white', !isThis);
+                    const ico = btn.querySelector('.pointer-icon');
+                    if (ico) {
+                        ico.classList.toggle('text-muji-red', isThis);
+                        ico.classList.toggle('text-muji-text', !isThis);
+                    }
+                });
+                if (loc) window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            clearAllHighlights();
+
+            const marker = GM.markers.get(id);
+            marker.setIcon(makeDotIcon(true));
+            marker.setZIndex(999);
+
+            if (loc) {
+                GM.infoWindow.setContent(buildInfoHtml(loc));
+                GM.infoWindow.open({ map: GM.map, anchor: marker });
+            }
+
+            if (pan) {
+                GM.map.panTo(marker.getPosition());
+                GM.map.setZoom(15);
+            }
+
+            // 亮起清單項目
+            const btn = document.querySelector(`.map-list-btn[data-loc-id="${id}"]`);
+            if (btn) {
+                btn.classList.remove('border-muji-border', 'bg-white');
+                btn.classList.add('border-muji-red', 'bg-red-50');
+                const ico = btn.querySelector('.pointer-icon');
+                if (ico) ico.classList.replace('text-muji-text', 'text-muji-red');
+                btn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderDaySelector();
+            renderItineraryForDay(currentDayIndex);
+            renderMapList();
+            initTabs();
+            fetchExchangeRate();
+            loadWalletData();
+            loadChecklist();
+            loadNotes();
+
+            // 若使用者直接以 #map 進入（重新整理時），嘗試初始化
+            if (location.hash === '#tab-map') {
+                setTimeout(initMap, 300);
+            }
+        });
+
+        // --- TAB 邏輯 ---
+        function initTabs() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    navBtns.forEach(function (b) {
+                        b.classList.remove('text-muji-brown');
+                        b.classList.add('text-muji-text');
+                    });
+                    btn.classList.add('text-muji-brown');
+                    btn.classList.remove('text-muji-text');
+
+                    const target = btn.getAttribute('data-target');
+                    document.querySelectorAll('.tab-content').forEach(function (tab) { tab.classList.remove('active'); });
+                    document.getElementById(target).classList.add('active');
+
+                    // 切換到地圖分頁時才載入 Google Maps（節省 API 呼叫次數）
+                    if (target === 'tab-map') {
+                        setTimeout(function () {
+                            if (!GM.initialized) {
+                                initMap();
+                            } else if (GM.map) {
+                                google.maps.event.trigger(GM.map, 'resize');
+                            }
+                        }, 120);
+                    }
+
+                    window.scrollTo(0, 0);
+                });
+            });
+        }
+
+        // --- PLAN: 渲染天數選擇器 ---
+        function renderDaySelector() {
+            const container = document.getElementById('day-tabs');
+            let html = '';
+            itineraryData.forEach(function (dayData, index) {
+                const shortName = dayData.day.split(' (')[0].toUpperCase();
+                const activeClass = index === currentDayIndex ?
+                    'bg-muji-brown text-white shadow-sm border-muji-brown' :
+                    'bg-white text-muji-text border-muji-border hover:bg-gray-50';
+
+                html += `
+                    <button onclick="selectDay(${index})" class="day-btn px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${activeClass}">
+                        ${shortName}
+                    </button>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function selectDay(index) {
+            currentDayIndex = index;
+            renderDaySelector();
+
+            const container = document.getElementById('itinerary-container');
+            container.style.opacity = 0;
+            setTimeout(function () {
+                renderItineraryForDay(currentDayIndex);
+                container.style.opacity = 1;
+                const y = container.getBoundingClientRect().top + window.scrollY - 300;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }, 200);
+        }
+
+        // --- PLAN: 渲染單日行程 ---
+        function renderItineraryForDay(index) {
+            const container = document.getElementById('itinerary-container');
+            container.style.transition = 'opacity 0.2s';
+
+            const day = itineraryData[index];
+            let html = `
+                <h3 class="font-serif text-lg font-bold text-muji-dark mb-5 border-b border-muji-border pb-2 inline-block">
+                    ${day.day}
+                </h3>
+                <div class="space-y-6 relative pb-6">
+            `;
+
+            day.events.forEach(function (ev) {
+                let typeClass = '';
+                let titleColor = 'text-muji-dark';
+
+                if (ev.type === 'highlight') {
+                    typeClass = 'highlight';
+                    titleColor = 'text-muji-brown font-bold';
+                } else if (ev.type === 'medical') {
+                    typeClass = 'medical';
+                    titleColor = 'text-muji-blue font-bold';
+                }
+
+                html += `
+                <div class="timeline-item relative pl-5 ${typeClass}">
+                    <div class="text-xs font-bold text-muji-text mb-0.5 tracking-wide">${ev.time}</div>
+                    <div class="text-[15px] ${titleColor} leading-tight mb-1.5">${ev.title}</div>
+                    ${ev.desc ? `<div class="text-xs text-muji-text leading-relaxed p-2.5 bg-white rounded-md border border-muji-border shadow-sm">${ev.desc}</div>` : ''}
+                </div>`;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // --- WALLET / LISTS / NOTES ---
+        async function fetchExchangeRate() {
+            const display = document.getElementById('display-rate');
+            display.innerText = "更新中...";
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/SGD');
+                const data = await res.json();
+                if (data && data.rates && data.rates.TWD) {
+                    currentSgdRate = data.rates.TWD;
+                    display.innerText = `1 SGD = ${currentSgdRate.toFixed(2)} TWD`;
+                } else {
+                    display.innerText = `1 SGD = ${currentSgdRate} TWD (預設)`;
+                }
+            } catch (error) {
+                display.innerText = `1 SGD = ${currentSgdRate} TWD (離線)`;
+            }
+        }
+
+        function calculate() {
+            const input = document.getElementById('calc-input').value;
+            const sanitized = input.replace(/[^0-9+\-*/().]/g, '');
+            try {
+                if (sanitized) {
+                    const result = eval(sanitized);
+                    const twd = Math.round(result * currentSgdRate);
+                    document.getElementById('calc-result').innerText = `NT$ ${twd.toLocaleString()}`;
+                }
+            } catch (e) {
+                document.getElementById('calc-result').innerText = "格式錯誤";
+            }
+        }
+
+        let currentPhotoBase64 = "";
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.getElementById('photo-canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 300;
+                    let w = img.width, h = img.height;
+                    if (w > MAX_WIDTH) { h = Math.round((h * MAX_WIDTH) / w); w = MAX_WIDTH; }
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.5);
+                    const preview = document.getElementById('photo-preview');
+                    preview.src = currentPhotoBase64;
+                    preview.classList.remove('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addExpense() {
+            const name = document.getElementById('expense-name').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            if (!name || isNaN(amount)) { alert("請輸入項目與正確金額"); return; }
+
+            const twd = Math.round(amount * currentSgdRate);
+            const expense = {
+                id: Date.now(), name: name, amount: amount, twd: twd, photo: currentPhotoBase64,
+                date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })
+            };
+
+            let expenses = JSON.parse(localStorage.getItem('muji_sg_expenses') || '[]');
+            expenses.unshift(expense);
+            try {
+                localStorage.setItem('muji_sg_expenses', JSON.stringify(expenses));
+            } catch (e) {
+                alert("儲存空間已滿，請刪除部分含有照片的舊紀錄！"); return;
+            }
+
+            document.getElementById('expense-name').value = '';
+            document.getElementById('expense-amount').value = '';
+            document.getElementById('photo-preview').classList.add('hidden');
+            document.getElementById('photo-preview').src = '';
+            currentPhotoBase64 = "";
+            document.getElementById('expense-photo').value = "";
+            loadWalletData();
+        }
+
+        function loadWalletData() {
+            const expenses = JSON.parse(localStorage.getItem('muji_sg_expenses') || '[]');
+            const listContainer = document.getElementById('expense-list');
+            listContainer.innerHTML = '';
+            let totalSgd = 0;
+
+            if (expenses.length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-muji-text text-center py-4">尚無支出紀錄</p>';
+            } else {
+                expenses.forEach(function (ex) {
+                    totalSgd += ex.amount;
+                    const imgHtml = ex.photo ? `<img src="${ex.photo}" class="w-10 h-10 object-cover rounded border border-muji-border ml-3" alt="收據">` : '';
+
+                    listContainer.innerHTML += `
+                    <div class="flex justify-between items-center bg-muji-bg p-3 rounded-md border border-muji-border">
+                        <div class="flex-1">
+                            <div class="text-xs text-muji-text mb-0.5">${ex.date}</div>
+                            <div class="text-sm font-medium text-muji-dark">${ex.name}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-bold text-muji-dark">S$ ${ex.amount.toFixed(2)}</div>
+                            <div class="text-xs text-muji-text">NT$ ${ex.twd.toLocaleString()}</div>
+                        </div>
+                        ${imgHtml}
+                        <button onclick="deleteExpense(${ex.id})" class="ml-3 text-muji-text hover:text-muji-red text-xs py-2 pl-2"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    `;
+                });
+            }
+            document.getElementById('total-expense').innerText = `總計: S$ ${totalSgd.toFixed(2)}`;
+        }
+
+        function deleteExpense(id) {
+            if (confirm("確定刪除此筆記錄嗎？")) {
+                let expenses = JSON.parse(localStorage.getItem('muji_sg_expenses') || '[]');
+                expenses = expenses.filter(function (ex) { return ex.id !== id; });
+                localStorage.setItem('muji_sg_expenses', JSON.stringify(expenses));
+                loadWalletData();
+            }
+        }
+
+        const defaultChecklist = [
+            { id: 1, text: "護照 (效期六個月以上)", checked: false },
+            { id: 2, text: "心臟節律器識別卡 (通關必備)", checked: false },
+            { id: 3, text: "腹膜透析物資 (愛多、2.5%、1.5%、小白帽、口罩等)", checked: false },
+            { id: 4, text: "新加坡網卡 (SIM/eSIM)", checked: false },
+            { id: 5, text: "萬用轉接頭 (新加坡為英規三角)", checked: false },
+            { id: 6, text: "晴雨兩用摺疊傘", checked: false },
+            { id: 7, text: "薄外套 (室內冷氣強)", checked: false }
+        ];
+
+        function loadChecklist() {
+            let items = JSON.parse(localStorage.getItem('muji_sg_checklist'));
+            if (!items || items.length === 0) {
+                items = defaultChecklist;
+                localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
+            }
+
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = '';
+            items.forEach(function (item) {
+                const checkedClass = item.checked ? 'line-through text-muji-text' : 'text-muji-dark';
+                container.innerHTML += `
+                <label class="flex items-center p-2 bg-muji-bg rounded-md border border-muji-border mb-2 cursor-pointer transition-colors hover:bg-gray-100">
+                    <input type="checkbox" class="w-4 h-4 text-muji-brown rounded border-muji-border mr-3 accent-[#8D7B68]"
+                           ${item.checked ? 'checked' : ''} onchange="toggleCheck(${item.id})">
+                    <span class="text-sm flex-1 ${checkedClass}">${item.text}</span>
+                    <button onclick="event.preventDefault(); deleteCheckItem(${item.id})" class="text-muji-text text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+                </label>
+                `;
+            });
+        }
+
+        function toggleCheck(id) {
+            let items = JSON.parse(localStorage.getItem('muji_sg_checklist'));
+            const item = items.find(function (i) { return i.id === id; });
+            if (item) {
+                item.checked = !item.checked;
+                localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
+                loadChecklist();
+            }
+        }
+
+        function addChecklistItem() {
+            const input = document.getElementById('new-check-item');
+            if (input.value.trim() !== '') {
+                let items = JSON.parse(localStorage.getItem('muji_sg_checklist') || '[]');
+                items.push({ id: Date.now(), text: input.value.trim(), checked: false });
+                localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
+                input.value = '';
+                loadChecklist();
+            }
+        }
+
+        function deleteCheckItem(id) {
+            let items = JSON.parse(localStorage.getItem('muji_sg_checklist'));
+            items = items.filter(function (i) { return i.id !== id; });
+            localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
+            loadChecklist();
+        }
+
+        function loadNotes() {
+            const notes = localStorage.getItem('muji_sg_notes') || '';
+            document.getElementById('personal-notes').value = notes;
+            renderNotesPreview(notes);
+        }
+
+        function saveNotes(btn) {
+            const text = document.getElementById('personal-notes').value;
+            localStorage.setItem('muji_sg_notes', text);
+            renderNotesPreview(text);
+
+            const target = btn || document.querySelector('#tab-lists button.btn-muji');
+            if (target) {
+                const originalText = target.innerText;
+                target.innerText = "已儲存 ✓";
+                setTimeout(function () { target.innerText = originalText; }, 1500);
+            }
+        }
+
+        function renderNotesPreview(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const html = text.replace(urlRegex, function (url) {
+                return `<a href="${url}" target="_blank" rel="noopener" class="text-muji-blue underline decoration-muji-border underline-offset-2"><i class="fa-solid fa-link text-xs mr-1"></i>連結</a>`;
+            });
+            document.getElementById('notes-preview').innerHTML = html || '<span class="text-muji-text italic">尚無備忘錄內容</span>';
+        }
+    </script>
+</body>
+</html>
