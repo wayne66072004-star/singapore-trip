@@ -1,0 +1,22 @@
+# ============================================================
+#  .gitignore
+# ============================================================
+
+# GitHub Actions 建置產物（由 workflow 產生，不進版控）
+_site/
+
+# 若你選擇「方式 2：本機專用 config.js」再打開這行，
+# 讓含真金鑰的 config.js 永遠不會被 commit：
+# config.js
+
+# 作業系統 / 編輯器雜項
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+*.swp
+.idea/
+.vscode/
+
+# 依賴（本專案為純靜態，通常不需要）
+node_modules/
