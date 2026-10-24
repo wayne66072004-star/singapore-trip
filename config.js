@@ -29,7 +29,7 @@ window.APP_CONFIG = {
    * 若維持預設的佔位符，網頁仍可正常開啟，但地圖區會顯示
    * 清楚的設定提示（其他所有功能都不受影響）。
    */
-  GOOGLE_MAPS_API_KEY: "AIzaSyDxuZXF5-HCMlyYUJYCHN1TdJoFWxXIJrY",
+  GOOGLE_MAPS_API_KEY: "GOOGLE_MAPS_API_KEY",
 
   /* ---------------------------------------------------------
    * ② 選填：Map ID（只有想用新版 AdvancedMarkerElement 才需要）
