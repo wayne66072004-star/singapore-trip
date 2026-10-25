@@ -18,7 +18,7 @@
  *     詳細步驟請見 README.md。
  * ------------------------------------------------------------
  *
- *  🔑 關於 __GOOGLE_MAPS_API_KEY__ 佔位符
+ *  🔑 關於 AIzaSyBPZW628klze0_0dFX73nTil-fFeTR2yIU 佔位符
  * ------------------------------------------------------------
  *  本檔刻意「不」存放真金鑰，只放佔位符。有兩種填入方式：
  *
@@ -30,11 +30,11 @@
  *            Settings → Secrets and variables → Actions
  *            → New repository secret，名稱 GOOGLE_MAPS_API_KEY
  *            部署時 workflow 會自動把佔位符換成真金鑰，
- *            repo 裡永遠只有 __GOOGLE_MAPS_API_KEY__。
+ *            repo 裡永遠只有 AIzaSyBPZW628klze0_0dFX73nTil-fFeTR2yIU。
  *            詳見 .github/workflows/deploy.yml 與 README.md。
  *
  *  ⚠️ 若使用方式 B，請勿手動修改佔位符字串 ——
- *     workflow 是靠精確比對 __GOOGLE_MAPS_API_KEY__ 來替換的，
+ *     workflow 是靠精確比對 AIzaSyBPZW628klze0_0dFX73nTil-fFeTR2yIU 來替換的，
  *     改掉它會導致注入失敗（workflow 會主動報錯提醒你）。
  */
 
@@ -42,13 +42,13 @@ window.APP_CONFIG = {
   /* ---------------------------------------------------------
    * ① 必填：你的 Google Maps API Key
    * ---------------------------------------------------------
-   * 保持 __GOOGLE_MAPS_API_KEY__ 不變 → 由 GitHub Actions 注入
+   * 保持 AIzaSyBPZW628klze0_0dFX73nTil-fFeTR2yIU 不變 → 由 GitHub Actions 注入
    * 改成 "AIza..." 開頭的字串     → 本機直接使用
    *
    * 若維持佔位符，網頁仍可正常開啟，但地圖區會顯示
    * 清楚的設定提示（其他所有功能都不受影響）。
    */
-  GOOGLE_MAPS_API_KEY: "__GOOGLE_MAPS_API_KEY__",
+  GOOGLE_MAPS_API_KEY: "AIzaSyBPZW628klze0_0dFX73nTil-fFeTR2yIU",
 
   /* ---------------------------------------------------------
    * ② 選填：Map ID（只有想用新版 AdvancedMarkerElement 才需要）
