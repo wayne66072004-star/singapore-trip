@@ -157,7 +157,7 @@ http://127.0.0.1:*/*
 打開 `config.js`，把第 ① 項換成你的金鑰：
 
 ```js
-GOOGLE_MAPS_API_KEY: "AIzaSyAbCdEfGhIjKlMnOpQrStUvWxYz123456",
+GOOGLE_MAPS_API_KEY: "__GOOGLE_MAPS_API_KEY__",
 ```
 
 存檔、重新整理網頁即可看到地圖。
