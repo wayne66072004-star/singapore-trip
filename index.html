@@ -162,6 +162,99 @@ sweep(document)})();</script>
         }
         .btn-muji:active { opacity: 0.8; }
 
+        /* ---------- 本地檔案：上傳與管理 ---------- */
+        .lf-dropzone {
+            border: 2px dashed #E6E6E0;
+            border-radius: 8px;
+            padding: 22px 12px;
+            text-align: center;
+            background: #FAFAFA;
+            transition: border-color .2s ease, background .2s ease;
+            cursor: pointer;
+        }
+        .lf-dropzone:hover { border-color: #C4B7A6; background: #FFF; }
+        .lf-dropzone:focus-visible { outline: 2px solid #8D7B68; outline-offset: 2px; }
+        .lf-dropzone.dragover { border-color: #8D7B68; background: #F5F5F0; }
+        .lf-storage-bar { height: 6px; background: #E6E6E0; border-radius: 999px; overflow: hidden; }
+        .lf-storage-fill { height: 100%; width: 0%; background: #8D7B68; border-radius: 999px; transition: width .3s ease, background .3s ease; }
+        .lf-storage-fill.warn { background: #A35C5C; }
+        .lf-card {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px; border: 1px solid #E6E6E0; border-radius: 8px;
+            background: #FFF; transition: box-shadow .2s ease;
+        }
+        .lf-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+        .lf-thumb {
+            width: 42px; height: 42px; border-radius: 6px; flex-shrink: 0;
+            background: #F5F5F0; border: 1px solid #E6E6E0;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .lf-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .lf-act {
+            width: 30px; height: 30px; border-radius: 6px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: #F5F5F0; border: 1px solid #E6E6E0; color: #5C5C5C;
+            font-size: 12px; transition: background .15s ease, color .15s ease;
+        }
+        .lf-act:hover { background: #FFF; color: #8D7B68; }
+        .lf-act.danger:hover { color: #A35C5C; }
+        .lf-modal {
+            position: fixed; inset: 0; z-index: 120; display: none;
+            align-items: center; justify-content: center;
+            background: rgba(0,0,0,.65); padding: 16px;
+        }
+        .lf-modal.open { display: flex; }
+        .lf-modal-inner {
+            background: #FFF; border-radius: 10px; width: 100%; max-width: 720px;
+            max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .lf-modal-body { flex: 1; overflow: auto; background: #F5F5F0; display: flex; align-items: center; justify-content: center; min-height: 200px; }
+        .lf-modal-body img { max-width: 100%; max-height: 70vh; display: block; }
+        .lf-modal-body iframe { width: 100%; height: 70vh; border: 0; background: #FFF; }
+
+        /* ---------- 本地檔案：分類標籤與篩選 ---------- */
+        .lf-filters {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-bottom: 12px;
+        }
+        .lf-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 10px; border-radius: 999px;
+            border: 1px solid #E6E6E0; background: #FFF;
+            color: #5C5C5C; font-size: 11px; line-height: 1;
+            cursor: pointer; white-space: nowrap;
+            transition: background .15s ease, color .15s ease, border-color .15s ease;
+        }
+        .lf-chip:hover { border-color: #C4B7A6; color: #8D7B68; }
+        .lf-chip:focus-visible { outline: 2px solid #8D7B68; outline-offset: 2px; }
+        .lf-chip.active { background: #8D7B68; border-color: #8D7B68; color: #FFF; }
+        .lf-chip .lf-chip-n {
+            font-size: 10px; padding: 0 5px; border-radius: 999px;
+            background: #F5F5F0; color: #8D7B68; min-width: 16px; text-align: center;
+        }
+        .lf-chip.active .lf-chip-n { background: rgba(255,255,255,.25); color: #FFF; }
+        .lf-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 10px; line-height: 1; padding: 3px 7px; border-radius: 999px;
+            border: 1px solid #E6E6E0; background: #F5F5F0; color: #8D7B68;
+            white-space: nowrap;
+        }
+        .lf-cat-select {
+            font-size: 10px; padding: 3px 6px; border-radius: 6px;
+            border: 1px solid #E6E6E0; background: #FFF; color: #5C5C5C;
+            max-width: 88px;
+        }
+        .lf-cat-select:focus-visible { outline: 2px solid #8D7B68; outline-offset: 1px; }
+        .lf-upload-cat {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            margin-top: 10px; font-size: 11px; color: #5C5C5C;
+        }
+        .lf-upload-cat select {
+            font-size: 11px; padding: 5px 8px; border-radius: 6px;
+            border: 1px solid #E6E6E0; background: #FFF; color: #5C5C5C;
+        }
+        .lf-upload-cat select:focus-visible { outline: 2px solid #8D7B68; outline-offset: 1px; }
+
         .timeline-item::before {
             content: '';
             position: absolute; left: -21px; top: 6px;
@@ -1105,6 +1198,51 @@ sweep(document)})();</script>
                     <li><strong class="text-muji-dark">市容法規：</strong> 亂丟垃圾、隨地吐痰、未沖馬桶皆會被重罰。</li>
                     <li><strong class="text-muji-dark">醫療安檢：</strong> 心臟節律器患者過安檢務必出示識別卡，要求人工手檢；腹膜透析液建議攜帶完整處方箋證明。</li>
                 </ul>
+            </div>
+
+            <!-- 本地檔案：上傳與管理 -->
+            <div id="local-files-block" class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mt-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-medium text-muji-dark"><i class="fa-solid fa-folder-open text-muji-brown mr-2"></i>本地檔案</h3>
+                    <span id="lf-count" class="text-[10px] text-muji-text/70"></span>
+                </div>
+                <p class="text-[11px] text-muji-text leading-relaxed mb-3">電子機票、各項門票、SIM 卡憑證等，儲存在此裝置的瀏覽器中，重新整理後仍會保留。</p>
+
+                <div id="lf-filters" class="lf-filters" role="tablist" aria-label="檔案分類篩選"></div>
+
+                <div id="lf-dropzone" class="lf-dropzone" role="button" tabindex="0" aria-label="點擊選擇檔案或拖放檔案至此上傳">
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-muji-brown mb-2"></i>
+                    <p class="text-sm text-muji-dark font-medium">點擊選擇檔案，或拖放至此</p>
+                    <p class="text-[10px] text-muji-text/70 mt-1">支援 PDF、圖片、憑證等常見格式</p>
+                    <input type="file" id="lf-input" multiple class="hidden" accept=".pdf,image/*,.txt,.md,.json,.csv,.doc,.docx,.xls,.xlsx,.pkpass">
+                </div>
+
+                <div class="lf-upload-cat">
+                    <label for="lf-upload-cat"><i class="fa-solid fa-tags mr-1"></i>上傳分類</label>
+                    <select id="lf-upload-cat">
+                        <option value="auto">自動判斷</option>
+                        <option value="flight">機票</option>
+                        <option value="ticket">門票</option>
+                        <option value="voucher">憑證</option>
+                        <option value="hotel">住宿</option>
+                        <option value="transit">交通</option>
+                        <option value="other">其他</option>
+                    </select>
+                    <span class="text-[10px] text-muji-text/60">上傳後仍可在卡片上修改</span>
+                </div>
+
+                <div class="mt-3">
+                    <div class="flex justify-between items-center text-[10px] text-muji-text mb-1">
+                        <span><i class="fa-solid fa-hard-drive mr-1"></i>儲存空間</span>
+                        <span id="lf-storage-text">偵測中…</span>
+                    </div>
+                    <div class="lf-storage-bar"><div id="lf-storage-fill" class="lf-storage-fill"></div></div>
+                </div>
+
+                <div id="lf-list" class="mt-4 space-y-2"></div>
+                <div id="lf-empty" class="text-center text-[11px] text-muji-text/60 py-6">
+                    <i class="fa-regular fa-folder-open text-xl mb-2 block"></i>尚未新增任何檔案
+                </div>
             </div>
         </section>
 
@@ -3356,6 +3494,541 @@ sweep(document)})();</script>
         } else if (isIOS() && isSafari()) {
             /* iOS Safari 不會觸發 beforeinstallprompt，直接提供圖文說明入口 */
             showInstallUI();
+        }
+    })();
+    </script>
+
+    <script>
+    /* ==========================================================
+     * 本地檔案（Local Files）
+     * 以 IndexedDB 儲存於瀏覽器本地，重新整理後仍保留。
+     * 功能：點擊／拖放上傳、容量偵測、預覽、下載、重新命名、刪除。
+     * ========================================================== */
+    (function () {
+        'use strict';
+
+        var DB_NAME = 'muji_sg_files';
+        var STORE = 'files';
+        var dbPromise = null;
+
+        /* ---------- 分類定義 ---------- */
+        var CATS = [
+            { id: 'flight',  label: '機票', icon: 'fa-plane' },
+            { id: 'ticket',  label: '門票', icon: 'fa-ticket' },
+            { id: 'voucher', label: '憑證', icon: 'fa-id-card' },
+            { id: 'hotel',   label: '住宿', icon: 'fa-bed' },
+            { id: 'transit', label: '交通', icon: 'fa-train-subway' },
+            { id: 'other',   label: '其他', icon: 'fa-file' }
+        ];
+        var CAT_MAP = {};
+        CATS.forEach(function (c) { CAT_MAP[c.id] = c; });
+        function catLabel(id) { return (CAT_MAP[id] || CAT_MAP.other).label; }
+        function catIcon(id) { return (CAT_MAP[id] || CAT_MAP.other).icon; }
+
+        function openDB() {
+            if (dbPromise) return dbPromise;
+            dbPromise = new Promise(function (resolve, reject) {
+                if (!('indexedDB' in window)) { reject(new Error('no-idb')); return; }
+                var req = indexedDB.open(DB_NAME, 1);
+                req.onupgradeneeded = function (e) {
+                    var db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'id' });
+                };
+                req.onsuccess = function (e) { resolve(e.target.result); };
+                req.onerror = function (e) { reject(e.target.error); };
+            });
+            return dbPromise;
+        }
+
+        function getAll() {
+            return openDB().then(function (db) {
+                return new Promise(function (res, rej) {
+                    var t = db.transaction(STORE, 'readonly');
+                    var r = t.objectStore(STORE).getAll();
+                    r.onsuccess = function () { res(r.result || []); };
+                    r.onerror = function () { rej(r.error); };
+                });
+            });
+        }
+        function putRec(rec) {
+            return openDB().then(function (db) {
+                return new Promise(function (res, rej) {
+                    var t = db.transaction(STORE, 'readwrite');
+                    t.objectStore(STORE).put(rec);
+                    t.oncomplete = function () { res(); };
+                    t.onerror = function () { rej(t.error); };
+                });
+            });
+        }
+        function delRec(id) {
+            return openDB().then(function (db) {
+                return new Promise(function (res, rej) {
+                    var t = db.transaction(STORE, 'readwrite');
+                    t.objectStore(STORE).delete(id);
+                    t.oncomplete = function () { res(); };
+                    t.onerror = function () { rej(t.error); };
+                });
+            });
+        }
+
+        /* ---------- 工具 ---------- */
+        function fmtSize(b) {
+            if (!b) return '0 B';
+            var u = ['B', 'KB', 'MB', 'GB'], i = Math.floor(Math.log(b) / Math.log(1024));
+            i = Math.min(i, u.length - 1);
+            return (b / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + ' ' + u[i];
+        }
+        function fmtTime(ts) {
+            var d = new Date(ts);
+            function p(n) { return n < 10 ? '0' + n : '' + n; }
+            return d.getFullYear() + '/' + p(d.getMonth() + 1) + '/' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+        }
+        function extOf(name) {
+            var m = /\.([a-z0-9]+)$/i.exec(name || '');
+            return m ? m[1].toLowerCase() : '';
+        }
+        function kindOf(rec) {
+            var t = (rec.type || '').toLowerCase(), e = extOf(rec.name);
+            if (t.indexOf('image/') === 0 || ['jpg','jpeg','png','gif','webp','bmp','svg','heic'].indexOf(e) >= 0) return 'image';
+            if (t === 'application/pdf' || e === 'pdf') return 'pdf';
+            if (['doc','docx'].indexOf(e) >= 0) return 'doc';
+            if (['xls','xlsx','csv'].indexOf(e) >= 0) return 'sheet';
+            if (['txt','md','json'].indexOf(e) >= 0) return 'text';
+            return 'file';
+        }
+        var ICONS = { image: 'fa-image', pdf: 'fa-file-pdf', doc: 'fa-file-word', sheet: 'fa-file-excel', text: 'fa-file-lines', file: 'fa-file' };
+        var COLORS = { image: '#5C7A99', pdf: '#A35C5C', doc: '#5C7A99', sheet: '#8D7B68', text: '#5C5C5C', file: '#8D7B68' };
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        /* ---------- 依檔名／類型自動建議分類 ---------- */
+        function autoSuggest(name, type) {
+            var n = String(name || '').toLowerCase();
+            var e = extOf(n);
+            var t = String(type || '').toLowerCase();
+            function has() {
+                for (var i = 0; i < arguments.length; i++) { if (n.indexOf(arguments[i]) >= 0) return true; }
+                return false;
+            }
+            if (e === 'pkpass') return 'voucher';
+            if (has('boarding', 'e-ticket', 'eticket', 'flight', 'airline', '機票', '登機', '航班', 'scoot', 'sia', 'eva', 'tigerair')) return 'flight';
+            if (has('hotel', 'booking', 'checkin', 'check-in', '住宿', '飯店', '酒店', '旅館', 'agoda', 'airbnb')) return 'hotel';
+            if (has('sim', 'esim', 'voucher', '憑證', '憑單', '序號', 'coupon', 'insurance', '保險', 'pass')) return 'voucher';
+            if (has('mrt', 'metro', 'train', 'bus', 'transport', '交通', '捷運', '地鐵', '車票', 'grab', 'taxi')) return 'transit';
+            if (has('ticket', '門票', '入場', 'admission', 'attraction', 'universal', 'zoo', 'museum', 'garden', 'show')) return 'ticket';
+            if (t.indexOf('image/') === 0) return 'other';
+            return 'other';
+        }
+
+        /* ---------- 狀態 ---------- */
+        var records = [];
+        var objectUrls = [];
+        var pendingPreviewId = null;
+        var activeCat = 'all';
+
+        var el = {
+            dropzone: document.getElementById('lf-dropzone'),
+            input: document.getElementById('lf-input'),
+            list: document.getElementById('lf-list'),
+            empty: document.getElementById('lf-empty'),
+            count: document.getElementById('lf-count'),
+            storageText: document.getElementById('lf-storage-text'),
+            storageFill: document.getElementById('lf-storage-fill'),
+            filters: document.getElementById('lf-filters'),
+            uploadCat: document.getElementById('lf-upload-cat')
+        };
+        if (!el.dropzone) return;
+
+        /* ---------- 儲存空間 ---------- */
+        function updateStorage() {
+            if (!navigator.storage || !navigator.storage.estimate) {
+                el.storageText.textContent = '此瀏覽器不支援容量偵測';
+                el.storageFill.style.width = '0%';
+                return;
+            }
+            navigator.storage.estimate().then(function (est) {
+                var usage = est.usage || 0, quota = est.quota || 0;
+                if (!quota) { el.storageText.textContent = '已用 ' + fmtSize(usage); return; }
+                var pct = Math.min(100, (usage / quota) * 100);
+                el.storageFill.style.width = pct.toFixed(1) + '%';
+                el.storageFill.classList.toggle('warn', pct >= 90);
+                el.storageText.textContent = '已用 ' + fmtSize(usage) + ' / 可用 ' + fmtSize(quota) + '（' + pct.toFixed(1) + '%）';
+            }).catch(function () {
+                el.storageText.textContent = '容量偵測失敗';
+            });
+        }
+
+        function remainingQuota() {
+            if (!navigator.storage || !navigator.storage.estimate) return Promise.resolve(Infinity);
+            return navigator.storage.estimate().then(function (est) {
+                return Math.max(0, (est.quota || 0) - (est.usage || 0));
+            }).catch(function () { return Infinity; });
+        }
+
+        /* ---------- 上傳 ---------- */
+        function addFiles(fileList) {
+            var files = Array.prototype.slice.call(fileList || []);
+            if (!files.length) return;
+            var total = files.reduce(function (s, f) { return s + f.size; }, 0);
+            var chosen = el.uploadCat ? el.uploadCat.value : 'auto';
+            var addedCats = [];
+
+            remainingQuota().then(function (remain) {
+                if (remain !== Infinity && total > remain) {
+                    alert('儲存空間不足！\n\n本次要新增 ' + fmtSize(total) + '，但瀏覽器僅剩約 ' + fmtSize(remain) + ' 可用。\n請先刪除部分檔案，或改用較小的檔案。');
+                    return;
+                }
+                var chain = Promise.resolve();
+                var added = 0;
+                files.forEach(function (f) {
+                    chain = chain.then(function () {
+                        var rec = {
+                            id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9),
+                            name: f.name || '未命名檔案',
+                            type: f.type || '',
+                            size: f.size || 0,
+                            time: Date.now(),
+                            cat: (chosen && chosen !== 'auto') ? chosen : autoSuggest(f.name, f.type),
+                            blob: f
+                        };
+                        addedCats.push(rec.cat);
+                        return putRec(rec).then(function () { added++; });
+                    });
+                });
+                return chain.then(function () {
+                    return refresh();
+                }).then(function () {
+                    updateStorage();
+                    if (added) {
+                        if (activeCat !== 'all' && addedCats.indexOf(activeCat) < 0) { activeCat = 'all'; render(); }
+                        flash('已新增 ' + added + ' 個檔案');
+                    }
+                });
+            }).catch(function (err) {
+                alert('檔案儲存失敗：' + (err && err.message ? err.message : err) + '\n（若為無痕模式或空間不足，可能無法寫入）');
+            });
+        }
+
+        /* ---------- 提示 ---------- */
+        var toastTimer = null;
+        function flash(msg) {
+            var t = document.getElementById('lf-toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'lf-toast';
+                t.style.cssText = 'position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:200;background:#333;color:#fff;font-size:12px;padding:8px 14px;border-radius:999px;opacity:0;transition:opacity .25s ease;pointer-events:none;max-width:80vw;text-align:center;';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () { t.style.opacity = '0'; }, 2200);
+        }
+
+        /* ---------- 清單渲染 ---------- */
+        function refresh() {
+            return getAll().then(function (rows) {
+                var chain = Promise.resolve();
+                rows.forEach(function (r) {
+                    if (!r.cat) {
+                        r.cat = autoSuggest(r.name, r.type);
+                        chain = chain.then(function () { return putRec(r); });
+                    }
+                });
+                return chain.then(function () {
+                    rows.sort(function (a, b) { return (b.time || 0) - (a.time || 0); });
+                    records = rows;
+                    render();
+                });
+            });
+        }
+
+        function chipHtml(id, label, icon, n) {
+            var on = activeCat === id;
+            return '<button type="button" class="lf-chip' + (on ? ' active' : '') + '" data-cat="' + id + '" role="tab" aria-selected="' + (on ? 'true' : 'false') + '">' +
+                '<i class="fa-solid ' + icon + '"></i>' + esc(label) +
+                '<span class="lf-chip-n">' + n + '</span></button>';
+        }
+
+        function renderFilters() {
+            if (!el.filters) return;
+            var counts = { all: records.length };
+            CATS.forEach(function (c) { counts[c.id] = 0; });
+            records.forEach(function (r) {
+                var k = r.cat || 'other';
+                if (counts[k] == null) counts[k] = 0;
+                counts[k]++;
+            });
+            var html = chipHtml('all', '全部', 'fa-layer-group', counts.all);
+            CATS.forEach(function (c) { html += chipHtml(c.id, c.label, c.icon, counts[c.id] || 0); });
+            el.filters.innerHTML = html;
+        }
+
+        function render() {
+            renderFilters();
+            el.list.innerHTML = '';
+            var shown = records.filter(function (r) { return activeCat === 'all' || (r.cat || 'other') === activeCat; });
+            el.empty.style.display = shown.length ? 'none' : 'block';
+            el.empty.innerHTML = records.length
+                ? '<i class="fa-regular fa-folder-open text-xl mb-2 block"></i>此分類尚無檔案'
+                : '<i class="fa-regular fa-folder-open text-xl mb-2 block"></i>尚未新增任何檔案';
+            el.count.textContent = records.length
+                ? (activeCat === 'all' ? records.length + ' 個檔案' : shown.length + ' / ' + records.length + ' 個檔案')
+                : '';
+
+            shown.forEach(function (rec) {
+                var kind = kindOf(rec);
+                var card = document.createElement('div');
+                card.className = 'lf-card';
+
+                var thumb = document.createElement('div');
+                thumb.className = 'lf-thumb';
+                if (kind === 'image' && rec.blob) {
+                    var url = URL.createObjectURL(rec.blob);
+                    objectUrls.push(url);
+                    var img = document.createElement('img');
+                    img.src = url;
+                    img.alt = rec.name;
+                    thumb.appendChild(img);
+                } else {
+                    thumb.innerHTML = '<i class="fa-solid ' + (ICONS[kind] || ICONS.file) + '" style="color:' + (COLORS[kind] || COLORS.file) + ';font-size:16px;"></i>';
+                }
+
+                var meta = document.createElement('div');
+                meta.className = 'flex-1 min-w-0';
+                meta.innerHTML =
+                    '<p class="text-[13px] text-muji-dark font-medium truncate" title="' + esc(rec.name) + '">' + esc(rec.name) + '</p>' +
+                    '<p class="text-[10px] text-muji-text/70 mt-0.5">' + esc((extOf(rec.name) || '檔案').toUpperCase()) + ' · ' + fmtSize(rec.size) + ' · ' + fmtTime(rec.time) + '</p>';
+
+                var tagRow = document.createElement('div');
+                tagRow.className = 'flex items-center gap-1.5 mt-1.5 flex-wrap';
+                var tag = document.createElement('span');
+                tag.className = 'lf-tag';
+                tag.innerHTML = '<i class="fa-solid ' + catIcon(rec.cat) + '"></i>' + esc(catLabel(rec.cat));
+                var catSel = document.createElement('select');
+                catSel.className = 'lf-cat-select';
+                catSel.setAttribute('aria-label', '修改「' + rec.name + '」的分類');
+                CATS.forEach(function (c) {
+                    var o = document.createElement('option');
+                    o.value = c.id;
+                    o.textContent = c.label;
+                    if ((rec.cat || 'other') === c.id) o.selected = true;
+                    catSel.appendChild(o);
+                });
+                catSel.addEventListener('change', function () { setCat(rec.id, catSel.value); });
+                tagRow.appendChild(tag);
+                tagRow.appendChild(catSel);
+                meta.appendChild(tagRow);
+
+                var acts = document.createElement('div');
+                acts.className = 'flex items-center gap-1.5';
+                acts.innerHTML =
+                    '<button class="lf-act" data-act="preview" title="預覽" aria-label="預覽"><i class="fa-solid fa-eye"></i></button>' +
+                    '<button class="lf-act" data-act="download" title="下載" aria-label="下載"><i class="fa-solid fa-download"></i></button>' +
+                    '<button class="lf-act" data-act="rename" title="重新命名" aria-label="重新命名"><i class="fa-solid fa-pen"></i></button>' +
+                    '<button class="lf-act danger" data-act="delete" title="刪除" aria-label="刪除"><i class="fa-solid fa-trash"></i></button>';
+
+                acts.addEventListener('click', function (e) {
+                    var btn = e.target.closest('button[data-act]');
+                    if (!btn) return;
+                    var act = btn.getAttribute('data-act');
+                    if (act === 'preview') openPreview(rec.id);
+                    else if (act === 'download') downloadRec(rec.id);
+                    else if (act === 'rename') renameRec(rec.id);
+                    else if (act === 'delete') deleteRec(rec.id);
+                });
+
+                card.appendChild(thumb);
+                card.appendChild(meta);
+                card.appendChild(acts);
+                el.list.appendChild(card);
+            });
+        }
+
+        function findRec(id) {
+            for (var i = 0; i < records.length; i++) if (records[i].id === id) return records[i];
+            return null;
+        }
+
+        /* ---------- 修改分類 ---------- */
+        function setCat(id, cat) {
+            var rec = findRec(id);
+            if (!rec || rec.cat === cat) return;
+            rec.cat = cat;
+            putRec(rec).then(function () {
+                return refresh();
+            }).then(function () {
+                flash('已改為「' + catLabel(cat) + '」');
+            }).catch(function (err) {
+                alert('分類更新失敗：' + (err && err.message ? err.message : err));
+            });
+        }
+
+        /* ---------- 預覽 ---------- */
+        function ensureModal() {
+            var m = document.getElementById('lf-modal');
+            if (m) return m;
+            m = document.createElement('div');
+            m.id = 'lf-modal';
+            m.className = 'lf-modal';
+            m.innerHTML =
+                '<div class="lf-modal-inner">' +
+                    '<div class="flex items-center justify-between px-4 py-3 border-b border-muji-border">' +
+                        '<p id="lf-modal-title" class="text-sm font-medium text-muji-dark truncate pr-3"></p>' +
+                        '<button id="lf-modal-close" class="lf-act" aria-label="關閉"><i class="fa-solid fa-xmark"></i></button>' +
+                    '</div>' +
+                    '<div id="lf-modal-body" class="lf-modal-body"></div>' +
+                    '<div class="flex items-center justify-end gap-2 px-4 py-3 border-t border-muji-border">' +
+                        '<button id="lf-modal-download" class="btn-muji text-[12px] px-3 py-1.5 rounded-md"><i class="fa-solid fa-download mr-1"></i>下載</button>' +
+                    '</div>' +
+                '</div>';
+            document.body.appendChild(m);
+            m.addEventListener('click', function (e) { if (e.target === m) closePreview(); });
+            document.getElementById('lf-modal-close').addEventListener('click', closePreview);
+            document.getElementById('lf-modal-download').addEventListener('click', function () {
+                if (pendingPreviewId) downloadRec(pendingPreviewId);
+            });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePreview(); });
+            return m;
+        }
+
+        function openPreview(id) {
+            var rec = findRec(id);
+            if (!rec) return;
+            var m = ensureModal();
+            var body = document.getElementById('lf-modal-body');
+            document.getElementById('lf-modal-title').textContent = rec.name;
+            body.innerHTML = '';
+            pendingPreviewId = id;
+
+            var kind = kindOf(rec);
+            var url = URL.createObjectURL(rec.blob);
+            objectUrls.push(url);
+
+            if (kind === 'image') {
+                var img = document.createElement('img');
+                img.src = url;
+                img.alt = rec.name;
+                body.appendChild(img);
+            } else if (kind === 'pdf') {
+                var fr = document.createElement('iframe');
+                fr.src = url;
+                fr.title = rec.name;
+                body.appendChild(fr);
+            } else {
+                body.innerHTML = '<div class="text-center p-8"><i class="fa-solid ' + (ICONS[kind] || ICONS.file) + ' text-3xl mb-3" style="color:' + (COLORS[kind] || COLORS.file) + '"></i><p class="text-sm text-muji-dark">此格式不支援線上預覽</p><p class="text-[11px] text-muji-text/70 mt-1">請使用下方「下載」按鈕開啟</p></div>';
+            }
+            m.classList.add('open');
+        }
+
+        function closePreview() {
+            var m = document.getElementById('lf-modal');
+            if (m) m.classList.remove('open');
+            var body = document.getElementById('lf-modal-body');
+            if (body) body.innerHTML = '';
+            pendingPreviewId = null;
+            objectUrls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+            objectUrls = [];
+            render();
+        }
+
+        /* ---------- 下載 ---------- */
+        function downloadRec(id) {
+            var rec = findRec(id);
+            if (!rec) return;
+            var url = URL.createObjectURL(rec.blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = rec.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        }
+
+        /* ---------- 重新命名 ---------- */
+        function renameRec(id) {
+            var rec = findRec(id);
+            if (!rec) return;
+            var next = prompt('重新命名檔案：', rec.name);
+            if (next === null) return;
+            next = next.trim();
+            if (!next) { alert('檔名不可為空。'); return; }
+            rec.name = next;
+            putRec(rec).then(function () {
+                return refresh();
+            }).then(function () { flash('已重新命名'); })
+              .catch(function (err) { alert('重新命名失敗：' + (err && err.message ? err.message : err)); });
+        }
+
+        /* ---------- 刪除 ---------- */
+        function deleteRec(id) {
+            var rec = findRec(id);
+            if (!rec) return;
+            if (!confirm('確定要刪除「' + rec.name + '」嗎？此動作無法復原。')) return;
+            delRec(id).then(function () {
+                return refresh();
+            }).then(function () {
+                updateStorage();
+                flash('已刪除檔案');
+            }).catch(function (err) { alert('刪除失敗：' + (err && err.message ? err.message : err)); });
+        }
+
+        /* ---------- 事件綁定 ---------- */
+        if (el.filters) {
+            el.filters.addEventListener('click', function (e) {
+                var btn = e.target.closest('button[data-cat]');
+                if (!btn) return;
+                activeCat = btn.getAttribute('data-cat');
+                render();
+            });
+        }
+
+        el.dropzone.addEventListener('click', function () { el.input.click(); });
+        el.dropzone.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.input.click(); }
+        });
+        el.input.addEventListener('change', function () {
+            addFiles(el.input.files);
+            el.input.value = '';
+        });
+
+        ['dragenter', 'dragover'].forEach(function (ev) {
+            el.dropzone.addEventListener(ev, function (e) {
+                e.preventDefault(); e.stopPropagation();
+                el.dropzone.classList.add('dragover');
+            });
+        });
+        ['dragleave', 'drop'].forEach(function (ev) {
+            el.dropzone.addEventListener(ev, function (e) {
+                e.preventDefault(); e.stopPropagation();
+                if (ev === 'dragleave' && el.dropzone.contains(e.relatedTarget)) return;
+                el.dropzone.classList.remove('dragover');
+            });
+        });
+        el.dropzone.addEventListener('drop', function (e) {
+            var dt = e.dataTransfer;
+            if (dt && dt.files && dt.files.length) addFiles(dt.files);
+        });
+        /* 避免拖到頁面其他位置時瀏覽器直接開啟檔案 */
+        ['dragover', 'drop'].forEach(function (ev) {
+            window.addEventListener(ev, function (e) {
+                if (!el.dropzone.contains(e.target)) e.preventDefault();
+            });
+        });
+
+        /* ---------- 初始化 ---------- */
+        refresh().then(updateStorage).catch(function (err) {
+            el.empty.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-xl mb-2 block text-muji-red"></i>無法讀取本地儲存空間';
+            console.warn('[LocalFiles]', err);
+        });
+        if (navigator.storage && navigator.storage.persist) {
+            navigator.storage.persisted().then(function (p) {
+                if (!p) navigator.storage.persist().catch(function () {});
+            }).catch(function () {});
         }
     })();
     </script>
