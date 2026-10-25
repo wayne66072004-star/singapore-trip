@@ -56,6 +56,32 @@ sweep(document)})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Singapore Trip | 家族旅行</title>
 
+    <!--
+      ============================================================
+      PWA（漸進式網頁應用程式）設定
+      ============================================================
+      ⚠️ 全部使用「相對路徑」。
+         GitHub Pages 部署在子目錄（/singapore-trip/），
+         寫成 "/manifest.json" 會指向網域根目錄而 404。
+      ============================================================
+    -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8D7B68">
+    <meta name="color-scheme" content="light">
+
+    <!-- iOS：加入主畫面後以全螢幕 App 方式開啟 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="新加坡行程">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+
+    <!-- 一般瀏覽器 / Android 圖示 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+    <link rel="shortcut icon" href="icons/favicon.ico">
+
     <!-- Tailwind CSS (HTTPS CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -519,9 +545,296 @@ sweep(document)})();</script>
             color: #5C5C5C;
         }
         .flight-info-row .k { flex-shrink: 0; width: 56px; color: #9A9A90; }
+        /* ============================================================
+           PWA 介面樣式（安裝提示 / 離線提示 / 更新提示）
+           沿用原本 Muji 米白 × 棕配色，不影響原有版面
+           ============================================================ */
+        .pwa-top-stack {
+            position: fixed;
+            top: 8px;
+            left: 0;
+            right: 0;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            pointer-events: none;
+        }
+        .pwa-top-stack > * { pointer-events: auto; }
+
+        .pwa-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 100%;
+            background: #FFFFFF;
+            border: 1px solid #E6E6E0;
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 11.5px;
+            line-height: 1.4;
+            color: #5C5C5C;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            animation: pwaDrop 0.28s ease-out;
+        }
+        .pwa-pill i { color: #8D7B68; flex-shrink: 0; }
+        .pwa-pill.is-offline { border-color: #E3D3C4; background: #FBF7F2; }
+        .pwa-pill.is-offline i { color: #A35C5C; }
+
+        .pwa-toast-btn {
+            flex-shrink: 0;
+            background: #8D7B68;
+            color: #FFFFFF;
+            border: 0;
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .pwa-toast-btn:active { opacity: 0.8; }
+
+        @keyframes pwaDrop {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pwaRise {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 安裝提示橫幅：固定在底部導覽列上方 */
+        .pwa-install-banner {
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 76px;
+            z-index: 55;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #FFFFFF;
+            border: 1px solid #E6E6E0;
+            border-radius: 14px;
+            padding: 10px 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.10);
+            animation: pwaRise 0.3s ease-out;
+        }
+        .pwa-install-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            border: 1px solid #E6E6E0;
+            flex-shrink: 0;
+        }
+        .pwa-install-text {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .pwa-install-text strong {
+            font-size: 12.5px;
+            color: #333333;
+            font-weight: 700;
+        }
+        .pwa-install-text span {
+            font-size: 10.5px;
+            color: #5C5C5C;
+            line-height: 1.4;
+        }
+        .pwa-install-go {
+            flex-shrink: 0;
+            background: #8D7B68;
+            color: #FFFFFF;
+            border: 0;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .pwa-install-go:active { opacity: 0.8; }
+        .pwa-install-x {
+            flex-shrink: 0;
+            background: transparent;
+            border: 0;
+            color: #9A9A90;
+            font-size: 20px;
+            line-height: 1;
+            padding: 2px 4px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* iOS 圖文說明：底部上滑面板 */
+        .pwa-sheet {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .pwa-sheet-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(51, 51, 51, 0.42);
+            animation: pwaFade 0.2s ease-out;
+        }
+        @keyframes pwaFade { from { opacity: 0; } to { opacity: 1; } }
+        .pwa-sheet-panel {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            background: #FFFFFF;
+            border-radius: 18px 18px 0 0;
+            padding: 10px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+            box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.12);
+            animation: pwaRise 0.3s ease-out;
+        }
+        .pwa-sheet-handle {
+            width: 38px;
+            height: 4px;
+            border-radius: 999px;
+            background: #E6E6E0;
+            margin: 0 auto 16px;
+        }
+        .pwa-sheet-title {
+            font-family: "Noto Serif TC", serif;
+            font-size: 17px;
+            font-weight: 600;
+            color: #333333;
+            margin: 0 0 6px;
+        }
+        .pwa-sheet-sub {
+            font-size: 12px;
+            color: #5C5C5C;
+            line-height: 1.6;
+            margin: 0 0 18px;
+        }
+        .pwa-steps {
+            list-style: none;
+            margin: 0 0 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .pwa-steps li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .pwa-step-num {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #F5F5F0;
+            border: 1px solid #E6E6E0;
+            color: #8D7B68;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pwa-steps li > div {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding-top: 1px;
+        }
+        .pwa-steps strong {
+            font-size: 13px;
+            color: #333333;
+            font-weight: 700;
+        }
+        .pwa-steps span {
+            font-size: 11.5px;
+            color: #5C5C5C;
+            line-height: 1.5;
+        }
+        .pwa-steps span i { color: #8D7B68; }
+        .pwa-sheet-ok {
+            width: 100%;
+            background: #8D7B68;
+            color: #FFFFFF;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .pwa-sheet-ok:active { opacity: 0.85; }
+
+        /* 已安裝（standalone）時，隱藏所有安裝提示 */
+        @media (display-mode: standalone) {
+            .pwa-install-banner,
+            #pwa-header-install { display: none !important; }
+        }
     </style>
 </head>
 <body class="font-sans antialiased h-screen flex flex-col overflow-hidden bg-muji-bg">
+
+    <!-- ============================================================
+         PWA 介面：離線提示 / 更新提示 / 安裝提示
+         全部為 fixed 定位的浮動層，不佔用原有版面空間
+         ============================================================ -->
+    <div class="pwa-top-stack" id="pwa-top-stack" aria-live="polite"></div>
+
+    <!-- 安裝提示橫幅（Android / Chrome 可安裝時顯示） -->
+    <div class="pwa-install-banner" id="pwa-install-banner" hidden>
+        <img class="pwa-install-icon" src="icons/icon-192.png" alt="新加坡行程 App 圖示" width="38" height="38">
+        <div class="pwa-install-text">
+            <strong>安裝到手機主畫面</strong>
+            <span>像 App 一樣全螢幕開啟，離線也能看行程</span>
+        </div>
+        <button class="pwa-install-go" type="button" onclick="pwaInstallClick()">安裝</button>
+        <button class="pwa-install-x" type="button" onclick="pwaDismissInstall()" aria-label="關閉安裝提示">&times;</button>
+    </div>
+
+    <!-- iOS Safari「加入主畫面」圖文說明 -->
+    <div class="pwa-sheet" id="pwa-ios-sheet" hidden>
+        <div class="pwa-sheet-backdrop" onclick="pwaCloseIosSheet()"></div>
+        <div class="pwa-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="pwa-ios-title">
+            <div class="pwa-sheet-handle"></div>
+            <h2 class="pwa-sheet-title" id="pwa-ios-title">加入主畫面</h2>
+            <p class="pwa-sheet-sub">iPhone / iPad 請用 Safari 開啟，依下列步驟把行程變成 App。</p>
+            <ol class="pwa-steps">
+                <li>
+                    <span class="pwa-step-num">1</span>
+                    <div>
+                        <strong>點下方「分享」按鈕</strong>
+                        <span>Safari 工具列中間的 <i class="fa-solid fa-arrow-up-from-bracket"></i> 圖示</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="pwa-step-num">2</span>
+                    <div>
+                        <strong>選擇「加入主畫面」</strong>
+                        <span>在分享選單中往下滑即可看到 <i class="fa-solid fa-plus"></i></span>
+                    </div>
+                </li>
+                <li>
+                    <span class="pwa-step-num">3</span>
+                    <div>
+                        <strong>按右上角「新增」</strong>
+                        <span>主畫面就會出現「新加坡行程」App 圖示</span>
+                    </div>
+                </li>
+            </ol>
+            <button class="pwa-sheet-ok" type="button" onclick="pwaCloseIosSheet()">知道了</button>
+        </div>
+    </div>
 
     <!-- Header -->
     <header class="bg-muji-white border-b border-muji-border p-4 z-50 flex justify-between items-center shadow-sm relative flex-shrink-0">
@@ -530,6 +843,12 @@ sweep(document)})();</script>
             <p class="text-xs text-muji-text mt-1">家族旅行 11.14 - 11.18</p>
         </div>
         <div class="flex items-center gap-2 relative shrink-0">
+            <!-- 安裝 App：可安裝時顯示；iOS Safari 則開啟「加入主畫面」圖文說明 -->
+            <button id="pwa-header-install" type="button" onclick="pwaInstallClick()" hidden
+                class="flex items-center gap-1 text-[11px] text-muji-dark border border-muji-border rounded-md px-2 py-1.5 bg-muji-bg hover:bg-white active:bg-white transition-colors">
+                <i class="fa-solid fa-download text-muji-brown"></i>
+                <span>安裝</span>
+            </button>
             <!-- 字體放大：三級循環（標準 100% / 放大 115% / 特大 130%），狀態存 localStorage -->
             <button id="font-scale-btn" type="button" onclick="cycleFontScale()" aria-pressed="false"
                 class="flex items-center gap-1 text-[11px] text-muji-dark border border-muji-border rounded-md px-2 py-1.5 bg-muji-bg hover:bg-white active:bg-white transition-colors">
@@ -2849,6 +3168,196 @@ sweep(document)})();</script>
             });
             document.getElementById('notes-preview').innerHTML = html || '<span class="text-muji-text italic">尚無備忘錄內容</span>';
         }
+    </script>
+
+    <!-- ============================================================
+         PWA 邏輯：Service Worker 註冊 / 安裝提示 / 離線與更新狀態
+         ============================================================
+         路徑一律使用相對路徑（'sw.js'、scope './'），
+         確保部署在 GitHub Pages 子目錄 /singapore-trip/ 下仍正常運作。
+         ============================================================ -->
+    <script>
+    (function () {
+        'use strict';
+
+        var DISMISS_KEY = 'sg_trip_pwa_install_dismissed';
+        var deferredPrompt = null;   /* beforeinstallprompt 事件暫存 */
+        var updateRequested = false; /* 使用者是否已按下「重新載入」 */
+        var refreshing = false;      /* 防止重載迴圈 */
+
+        /* ---------------- 環境判斷 ---------------- */
+        function isStandalone() {
+            return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                   window.navigator.standalone === true;
+        }
+        function isIOS() {
+            var ua = window.navigator.userAgent || '';
+            return /iPad|iPhone|iPod/.test(ua) ||
+                   (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+        }
+        function isSafari() {
+            var ua = window.navigator.userAgent || '';
+            return /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|Chrome|Android/.test(ua);
+        }
+        function isDismissed() {
+            try { return localStorage.getItem(DISMISS_KEY) === '1'; } catch (e) { return false; }
+        }
+        function setDismissed() {
+            try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) { /* 忽略 */ }
+        }
+
+        /* ---------------- 頂部提示列 ---------------- */
+        var stack = document.getElementById('pwa-top-stack');
+
+        function showPill(id, html, kind) {
+            if (!stack) return null;
+            var el = document.getElementById(id);
+            if (!el) {
+                el = document.createElement('div');
+                el.id = id;
+                stack.appendChild(el);
+            }
+            el.className = 'pwa-pill' + (kind ? ' ' + kind : '');
+            el.innerHTML = html;
+            el.hidden = false;
+            return el;
+        }
+        function hidePill(id) {
+            var el = document.getElementById(id);
+            if (el) el.hidden = true;
+        }
+
+        /* ---------------- 離線 / 上線狀態 ---------------- */
+        function updateOnlineState() {
+            if (navigator.onLine) {
+                hidePill('pwa-offline-pill');
+            } else {
+                showPill('pwa-offline-pill',
+                    '<i class="fa-solid fa-wifi"></i><span>目前離線，顯示的是已快取的內容</span>',
+                    'is-offline');
+            }
+        }
+        window.addEventListener('online', updateOnlineState);
+        window.addEventListener('offline', updateOnlineState);
+
+        /* ---------------- 安裝提示 ---------------- */
+        var banner = document.getElementById('pwa-install-banner');
+        var headerBtn = document.getElementById('pwa-header-install');
+
+        function showInstallUI() {
+            if (isStandalone() || isDismissed()) return;
+            if (banner) banner.hidden = false;
+            if (headerBtn) headerBtn.hidden = false;
+        }
+        function hideInstallUI() {
+            if (banner) banner.hidden = true;
+            if (headerBtn) headerBtn.hidden = true;
+        }
+
+        window.pwaDismissInstall = function () {
+            setDismissed();
+            hideInstallUI();
+        };
+
+        window.pwaInstallClick = function () {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function (choice) {
+                    if (choice && choice.outcome === 'accepted') hideInstallUI();
+                    deferredPrompt = null;
+                }).catch(function () { deferredPrompt = null; });
+                return;
+            }
+            /* 沒有 beforeinstallprompt（iOS Safari / 已安裝 / 不支援）→ 顯示圖文說明 */
+            window.pwaOpenIosSheet();
+        };
+
+        window.pwaOpenIosSheet = function () {
+            var sheet = document.getElementById('pwa-ios-sheet');
+            if (sheet) sheet.hidden = false;
+        };
+        window.pwaCloseIosSheet = function () {
+            var sheet = document.getElementById('pwa-ios-sheet');
+            if (sheet) sheet.hidden = true;
+        };
+
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallUI();
+        });
+
+        window.addEventListener('appinstalled', function () {
+            deferredPrompt = null;
+            hideInstallUI();
+            showPill('pwa-installed-pill',
+                '<i class="fa-solid fa-circle-check"></i><span>已安裝到主畫面，可從桌面直接開啟</span>');
+            setTimeout(function () { hidePill('pwa-installed-pill'); }, 5000);
+        });
+
+        /* ---------------- Service Worker 註冊與版本更新 ---------------- */
+        function showUpdatePill(reg) {
+            var el = showPill('pwa-update-pill',
+                '<i class="fa-solid fa-rotate"></i><span>有新版本可用</span>' +
+                '<button class="pwa-toast-btn" type="button" id="pwa-update-btn">重新載入</button>');
+            var btn = el && el.querySelector('#pwa-update-btn');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                btn.disabled = true;
+                btn.textContent = '更新中…';
+                updateRequested = true;
+                if (reg && reg.waiting) {
+                    reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                } else {
+                    window.location.reload();
+                }
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('sw.js', { scope: './' })
+                    .then(function (reg) {
+                        console.log('[PWA] Service Worker 已註冊，scope:', reg.scope);
+
+                        /* 已有等待中的新版（例如上次沒按更新就關掉） */
+                        if (reg.waiting && navigator.serviceWorker.controller) {
+                            showUpdatePill(reg);
+                        }
+
+                        reg.addEventListener('updatefound', function () {
+                            var installing = reg.installing;
+                            if (!installing) return;
+                            installing.addEventListener('statechange', function () {
+                                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showUpdatePill(reg);
+                                }
+                            });
+                        });
+                    })
+                    .catch(function (err) {
+                        console.warn('[PWA] Service Worker 註冊失敗:', err);
+                    });
+
+                /* 新版接管後重載一次；僅在使用者主動按下更新時執行，避免首次載入被重載 */
+                navigator.serviceWorker.addEventListener('controllerchange', function () {
+                    if (!updateRequested || refreshing) return;
+                    refreshing = true;
+                    window.location.reload();
+                });
+            });
+        }
+
+        /* ---------------- 初始化 ---------------- */
+        updateOnlineState();
+
+        if (isStandalone()) {
+            hideInstallUI();
+        } else if (isIOS() && isSafari()) {
+            /* iOS Safari 不會觸發 beforeinstallprompt，直接提供圖文說明入口 */
+            showInstallUI();
+        }
+    })();
     </script>
 </body>
 </html>
