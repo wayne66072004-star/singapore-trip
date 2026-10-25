@@ -201,16 +201,33 @@ sweep(document)})();</script>
         .lf-modal {
             position: fixed; inset: 0; z-index: 120; display: none;
             align-items: center; justify-content: center;
-            background: rgba(0,0,0,.65); padding: 16px;
+            background: rgba(0,0,0,.65); padding: 12px;
         }
         .lf-modal.open { display: flex; }
         .lf-modal-inner {
             background: #FFF; border-radius: 10px; width: 100%; max-width: 720px;
-            max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
+            max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px);
+            display: flex; flex-direction: column; overflow: hidden;
         }
-        .lf-modal-body { flex: 1; overflow: auto; background: #F5F5F0; display: flex; align-items: center; justify-content: center; min-height: 200px; }
-        .lf-modal-body img { max-width: 100%; max-height: 70vh; display: block; }
-        .lf-modal-body iframe { width: 100%; height: 70vh; border: 0; background: #FFF; }
+        /* 內容區：可捲動且不裁切。子元素用 margin:auto 置中，
+           內容比視窗高時自動貼齊頂端並可捲動（避免 flex 置中 + overflow 把頂端切掉）。 */
+        .lf-modal-body {
+            flex: 1 1 auto; min-height: 0;
+            overflow: auto; -webkit-overflow-scrolling: touch;
+            background: #F5F5F0; display: flex; flex-direction: column;
+            align-items: stretch; justify-content: flex-start;
+        }
+        .lf-modal-body img {
+            margin: auto; display: block; max-width: 100%;
+            max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px);
+        }
+        /* PDF：外框撐滿可用高度，內嵌框精準填滿，完全不出現裁切 */
+        .lf-modal.pdf .lf-modal-inner { height: calc(100vh - 24px); height: calc(100dvh - 24px); }
+        .lf-modal.pdf .lf-modal-body { display: block; overflow: hidden; padding: 0; }
+        .lf-modal.pdf .lf-modal-body iframe { display: block; width: 100%; height: 100%; border: 0; background: #FFF; }
+        /* PDF 無法內嵌時的備援畫面 */
+        .lf-pdf-fallback { margin: auto; padding: 24px 18px; text-align: center; max-width: 420px; }
+        .lf-pdf-fallback .lf-pdf-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
 
         /* ---------- 本地檔案：分類標籤與篩選 ---------- */
         .lf-filters {
@@ -3895,6 +3912,42 @@ sweep(document)})();</script>
             return m;
         }
 
+        var previewTimer = null;
+
+        /* PDF 無法內嵌顯示時的備援畫面：提示 + 在新分頁開啟 + 下載 */
+        function showPdfFallback(body, rec, msg) {
+            body.innerHTML =
+                '<div class="lf-pdf-fallback">' +
+                    '<i class="fa-solid fa-file-pdf" style="color:' + COLORS.pdf + ';font-size:30px;"></i>' +
+                    '<p class="text-sm text-muji-dark mt-3">' + esc(msg || '此瀏覽器無法在頁面內顯示 PDF 內容。') + '</p>' +
+                    '<p class="text-[11px] text-muji-text/70 mt-1 break-words">' + esc(rec.name) + '</p>' +
+                    '<div class="lf-pdf-actions">' +
+                        '<button type="button" class="btn-muji text-[12px] px-3 py-1.5 rounded-md" data-pdf="newtab"><i class="fa-solid fa-up-right-from-square mr-1"></i>在新分頁開啟</button>' +
+                        '<button type="button" class="btn-muji text-[12px] px-3 py-1.5 rounded-md" data-pdf="download"><i class="fa-solid fa-download mr-1"></i>下載</button>' +
+                    '</div>' +
+                '</div>';
+            var nb = body.querySelector('[data-pdf="newtab"]');
+            var db = body.querySelector('[data-pdf="download"]');
+            if (nb) nb.addEventListener('click', function () { openPdfInNewTab(rec); });
+            if (db) db.addEventListener('click', function () { downloadRec(rec.id); });
+        }
+
+        /* 以獨立的 blob URL 在新分頁開啟 PDF；彈窗被阻擋時退回下載 */
+        function openPdfInNewTab(rec) {
+            var fresh = URL.createObjectURL(rec.blob);
+            var win = null;
+            try { win = window.open(fresh, '_blank'); } catch (e) { win = null; }
+            if (!win) {
+                var a = document.createElement('a');
+                a.href = fresh;
+                a.download = rec.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            setTimeout(function () { try { URL.revokeObjectURL(fresh); } catch (e) {} }, 120000);
+        }
+
         function openPreview(id) {
             var rec = findRec(id);
             if (!rec) return;
@@ -3902,7 +3955,9 @@ sweep(document)})();</script>
             var body = document.getElementById('lf-modal-body');
             document.getElementById('lf-modal-title').textContent = rec.name;
             body.innerHTML = '';
+            m.classList.remove('pdf');
             pendingPreviewId = id;
+            if (previewTimer) { clearTimeout(previewTimer); previewTimer = null; }
 
             var kind = kindOf(rec);
             var url = URL.createObjectURL(rec.blob);
@@ -3914,10 +3969,28 @@ sweep(document)})();</script>
                 img.alt = rec.name;
                 body.appendChild(img);
             } else if (kind === 'pdf') {
+                m.classList.add('pdf');
                 var fr = document.createElement('iframe');
-                fr.src = url;
                 fr.title = rec.name;
+                fr.setAttribute('title', rec.name);
                 body.appendChild(fr);
+
+                var pdfLoaded = false;
+                fr.addEventListener('load', function () { pdfLoaded = true; });
+                fr.src = url;
+
+                // 瀏覽器自帶 PDF 檢視器被關閉／不支援（常見於 iOS Safari）→ 直接顯示備援
+                var canEmbed = !(('pdfViewerEnabled' in navigator) && navigator.pdfViewerEnabled === false);
+                if (!canEmbed) {
+                    showPdfFallback(body, rec, '此瀏覽器（例如 iOS Safari）不支援在頁面內嵌顯示 PDF。');
+                } else {
+                    // 保險機制：2.5 秒內若內嵌框仍未載入完成，改用備援畫面
+                    previewTimer = setTimeout(function () {
+                        if (!pdfLoaded && body.querySelector('iframe')) {
+                            showPdfFallback(body, rec, '此瀏覽器無法在頁面內顯示 PDF 內容。');
+                        }
+                    }, 2500);
+                }
             } else {
                 body.innerHTML = '<div class="text-center p-8"><i class="fa-solid ' + (ICONS[kind] || ICONS.file) + ' text-3xl mb-3" style="color:' + (COLORS[kind] || COLORS.file) + '"></i><p class="text-sm text-muji-dark">此格式不支援線上預覽</p><p class="text-[11px] text-muji-text/70 mt-1">請使用下方「下載」按鈕開啟</p></div>';
             }
@@ -3926,7 +3999,8 @@ sweep(document)})();</script>
 
         function closePreview() {
             var m = document.getElementById('lf-modal');
-            if (m) m.classList.remove('open');
+            if (m) { m.classList.remove('open'); m.classList.remove('pdf'); }
+            if (previewTimer) { clearTimeout(previewTimer); previewTimer = null; }
             var body = document.getElementById('lf-modal-body');
             if (body) body.innerHTML = '';
             pendingPreviewId = null;
