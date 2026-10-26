@@ -592,7 +592,7 @@ sweep(document)})();</script>
         .rs-row-meta { flex: 0 0 auto; font-size: 9px; color: #9A9A90; }
         .rs-empty { font-size: 10px; color: #9A9A90; }
 
-        .route-shell { height: 46vh; min-height: 250px; }
+        .route-shell { height: 52vh; min-height: 300px; }
         #route-map { position: absolute; inset: 0; background-color: #EFEFE9; }
         .route-fallback { position: absolute; inset: 0; z-index: 5; display: none; background: #F5F5F0; }
         .route-fallback.show { display: block; }
@@ -605,6 +605,10 @@ sweep(document)})();</script>
 
         .route-view-toggle { position: absolute; right: 8px; bottom: 8px; z-index: 8; }
         .route-view-toggle button { display: inline-flex; align-items: center; gap: 4px; font-size: 9.5px; padding: 4px 8px; border-radius: 5px; background: rgba(255,255,255,.96); border: 1px solid #E6E6E0; color: #5C5C5C; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+
+        .route-dir-note { font-size: 9.5px; line-height: 1.6; color: #7A7469; background: #FBFAF7; border: 1px solid #E6E6E0; border-radius: 6px; padding: 6px 8px; margin: 7px 1px 0; }
+        .route-dir-note:empty { display: none; }
+        .route-dir-note b { font-weight: 600; color: #5C5C5C; }
 
         .route-legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 7px 1px 10px; }
         .rl-item { display: inline-flex; align-items: center; gap: 4px; font-size: 9.5px; color: #7A7469; }
@@ -1150,6 +1154,8 @@ sweep(document)})();</script>
                 <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-2 ml-1">分段路線</h2>
                 <p class="text-[11px] text-muji-text leading-relaxed mb-3">
                     依日期選擇：可單看某一段，或一次看該日全部路線。下方列出起點、終點、途經點與步行距離。
+                    路線以 Google Maps Directions 依<b>實際路網</b>繪製（步行／捷運／叫車各自對應交通方式）；
+                    若某段查不到路網，才退回該段的座標折線並標示說明。
                 </p>
 
                 <!-- 日期膠囊 -->
@@ -1161,16 +1167,41 @@ sweep(document)})();</script>
                 <!-- 所選路線摘要 -->
                 <div class="route-summary" id="route-summary"></div>
 
-                <!-- 路線圖：Google Maps 或座標示意圖 -->
+                <!-- 單一地圖：Google Maps（沿實際路網）或座標示意圖備援 -->
                 <div class="map-shell border border-muji-border shadow-sm route-shell">
                     <div id="route-map"></div>
                     <div id="route-fallback" class="route-fallback"></div>
+
+                    <!-- 行程天數圖例（點擊切換標記顯示／隱藏） -->
+                    <div class="map-legend" id="map-legend">
+                        <div class="text-[9px] text-muji-text font-bold mb-1.5 tracking-wider">行程天數</div>
+                        <div id="legend-items" class="space-y-0.5"></div>
+                    </div>
+
+                    <!-- 圖層控制面板（右上角可收合） -->
+                    <div class="map-layers is-collapsed" id="map-layers">
+                        <button type="button" class="map-layers-head" id="map-layers-head"
+                                onclick="toggleLayersPanel()" aria-expanded="false" aria-controls="map-layers-body">
+                            <i class="fa-solid fa-layer-group text-[10px] text-muji-brown"></i>
+                            <span class="text-[9px] text-muji-text font-bold tracking-wider flex-1 text-left">圖層</span>
+                            <i class="fa-solid fa-chevron-down ml-caret text-[8px] text-muji-text"></i>
+                        </button>
+                        <div class="map-layers-body" id="map-layers-body"></div>
+                    </div>
+
+                    <button onclick="resetMapView()" class="map-reset-btn bg-muji-white text-muji-dark text-[10px] px-2 py-1 rounded shadow-sm border border-muji-border hover:bg-gray-50 flex items-center">
+                        <i class="fa-solid fa-expand mr-1"></i>重置全景
+                    </button>
+
                     <div class="route-view-toggle">
                         <button type="button" onclick="toggleRouteView()" aria-label="切換路線圖顯示方式">
                             <i class="fa-solid fa-layer-group"></i><span id="route-view-label">示意圖</span>
                         </button>
                     </div>
                 </div>
+
+                <!-- 路線繪製方式說明（實際路網 / 座標折線） -->
+                <div class="route-dir-note" id="route-dir-note"></div>
 
                 <!-- 路線圖例 -->
                 <div class="route-legend" id="route-legend"></div>
@@ -1183,8 +1214,10 @@ sweep(document)})();</script>
                     </button>
                     <div class="route-key-panel" id="route-key-panel">
                         <p class="text-[10px] text-muji-text leading-relaxed mb-2">
-                            填入自己的 Google Maps JavaScript API Key，只會存在<b>這台裝置的這個瀏覽器</b>（localStorage），不會上傳。
-                            沒有 Key 時路線圖會自動改用座標示意圖，其餘功能完全不受影響。
+                            網頁已內建一把預設 Key，開啟即可使用 Google 地圖與實際路網路線，<b>不需手動輸入</b>。
+                            若預設 Key 失效（例如網域限制或額度用盡），可在下方填入自己的 Key 作為備援；
+                            填入的值只會存在<b>這台裝置的這個瀏覽器</b>（localStorage），不會上傳。
+                            沒有可用 Key 時，路線圖會自動改用座標示意圖，其餘功能完全不受影響。
                         </p>
                         <input id="route-key-input" class="route-key-input" type="text" placeholder="AIza..." autocomplete="off" spellcheck="false" inputmode="text">
                         <div class="flex gap-2">
@@ -1196,65 +1229,7 @@ sweep(document)})();</script>
                 </div>
             </div>
 
-            <!-- 內嵌於 Map 分頁中的地圖區塊 -->
-            <div class="sticky top-0 z-40 bg-muji-bg pt-2 pb-2">
-                <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-2 ml-1">行程地圖</h2>
-
-                <div class="map-shell border border-muji-border shadow-sm">
-                    <div id="google-map"></div>
-
-                    <button onclick="resetMapView()" class="map-reset-btn bg-muji-white text-muji-dark text-[10px] px-2 py-1 rounded shadow-sm border border-muji-border hover:bg-gray-50 flex items-center">
-                        <i class="fa-solid fa-expand mr-1"></i>重置全景
-                    </button>
-
-                    <!-- 圖例：Day 1～5 顏色對照，點擊切換顯示/隱藏 -->
-                    <div class="map-legend" id="map-legend">
-                        <div class="text-[9px] text-muji-text font-bold mb-1.5 tracking-wider">行程天數</div>
-                        <div id="legend-items" class="space-y-0.5"></div>
-                    </div>
-
-                    <!-- 圖層控制面板：右上角可收合的浮動卡片，內容由 renderLayersPanel() 產生 -->
-                    <div class="map-layers is-collapsed" id="map-layers">
-                        <button type="button" class="map-layers-head" id="map-layers-head"
-                                onclick="toggleLayersPanel()" aria-expanded="false" aria-controls="map-layers-body">
-                            <i class="fa-solid fa-layer-group text-[10px] text-muji-brown"></i>
-                            <span class="text-[9px] text-muji-text font-bold tracking-wider flex-1 text-left">圖層</span>
-                            <i class="fa-solid fa-chevron-down ml-caret text-[8px] text-muji-text"></i>
-                        </button>
-                        <div class="map-layers-body" id="map-layers-body"></div>
-                    </div>
-
-                    <!-- 金鑰未設定 / 載入失敗時的說明層 -->
-                    <div id="map-status" class="map-status">
-                        <div class="map-status-card">
-                            <div class="flex items-start">
-                                <div class="w-8 h-8 rounded-full bg-muji-bg border border-muji-border flex items-center justify-center mr-3 flex-shrink-0">
-                                    <i id="map-status-icon" class="fa-solid fa-triangle-exclamation text-muji-brown text-sm"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p id="map-status-title" class="text-[13px] font-bold text-muji-dark leading-snug mb-1">地圖尚未啟用</p>
-                                    <p id="map-status-desc" class="text-[11px] text-muji-text leading-relaxed"></p>
-                    <p id="map-status-diag" class="text-[10px] text-muji-text/70 leading-relaxed mt-2 font-mono break-all hidden"></p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2 mt-3">
-                                <button onclick="retryMap()" class="flex-1 bg-muji-bg border border-muji-border text-muji-dark text-[11px] py-1.5 rounded-md active:bg-gray-100">
-                                    <i class="fa-solid fa-rotate-right mr-1"></i>重試
-                                </button>
-                                <a href="README.md" target="_blank" class="flex-1 text-center bg-muji-white border border-muji-border text-muji-dark text-[11px] py-1.5 rounded-md active:bg-gray-100">
-                                    <i class="fa-solid fa-book mr-1"></i>設定說明
-                                </a>
-                            </div>
-                            <!-- 依錯誤碼動態填入的「一鍵前往修正」按鈕 -->
-                            <a id="map-status-fix" href="#" target="_blank" rel="noopener"
-                               class="hidden mt-2 w-full text-center bg-muji-brown text-white text-[11px] py-1.5 rounded-md active:opacity-80">
-                                <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i><span id="map-status-fix-label">前往修正</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <!-- 行程地點清單（點擊即在上方同一張地圖亮燈定位） -->
             <div class="pt-4 pb-6">
                 <p class="text-xs text-muji-text mb-4"><i class="fa-solid fa-hand-pointer mr-1"></i>點擊下方列表，即可在上方地圖亮燈查看確切位置：</p>
                 <div id="map-locations-list" class="space-y-2">
@@ -1787,7 +1762,9 @@ sweep(document)})();</script>
             renderers: [],
             overlays: [],
             dirService: null,
-            loading: false
+            loading: false,
+            dirFailed: {},        // 索引 -> true（該段 Directions 查不到，已退回座標折線）
+            dirDenied: false      // Directions 服務整體被拒（例如未啟用 Directions API）
         };
 
         const ROUTE_KEY_STORAGE = 'muji_sg_gmaps_key_v1';
@@ -1847,6 +1824,7 @@ sweep(document)})();</script>
             }
 
             renderRouteSummary();
+            renderRouteDirNote();
             drawSelectedRoutes();
         }
 
@@ -1877,7 +1855,10 @@ sweep(document)})();</script>
                         '<span class="rs-pill">負擔 ' + s.effort + '</span>' +
                     '</div>' +
                     (s.via && s.via.length ? '<div class="rs-way"><b>途經點：</b>' + s.via.join(' → ') + '</div>' : '') +
-                    '<div class="rs-acc">♿ ' + accLabel + '　' + s.note + '</div>';
+                    '<div class="rs-acc">♿ ' + accLabel + '　' + s.note + '</div>' +
+                    (RM.dirFailed[RM.sel]
+                        ? '<div class="rs-way" style="margin-top:5px;color:#A8705C"><b>⚠ 此段以座標折線顯示</b>：Google Directions 查不到此段路網，已以虛線標示。</div>'
+                        : '');
                 return;
             }
 
@@ -1898,6 +1879,34 @@ sweep(document)})();</script>
                 '<span class="rs-title">當日全部 ' + segs.length + ' 段</span></div>' +
                 '<div class="rs-list">' + rows + '</div>' +
                 '<div class="rs-way" style="margin-top:6px"><b>合計移動時間：</b>約 ' + totalMin + ' 分（不含景點停留）</div>';
+        }
+
+        /**
+         * 路線繪製方式說明：讓使用者知道目前畫的是「實際路網」還是「座標折線」。
+         * 只在有 Google 地圖時顯示（示意圖模式本身已有說明）。
+         */
+        function renderRouteDirNote() {
+            const box = document.getElementById('route-dir-note');
+            if (!box) return;
+            if (!RM.map || RM.tileFailed || RM.view === 'schematic') { box.innerHTML = ''; return; }
+
+            const segs = selectedRouteSegments();
+            const failed = Object.keys(RM.dirFailed).length;
+            const cable = segs.filter(function (s) { return !(ROUTE_MODE_META[s.mode] || {}).travel; }).length;
+
+            let html = '';
+            if (RM.dirDenied) {
+                html = '<b>⚠ 目前以座標折線顯示</b>：這把 Key 尚未啟用 Directions API（或未授權），' +
+                       '因此無法依實際路網繪製。請到 Cloud Console 啟用 <b>Directions API</b> 後重新整理即可。';
+            } else if (failed) {
+                html = '<b>⚠ 部分路段以座標折線顯示</b>：共 ' + failed + ' 段查不到路網（已以虛線標示），其餘路段皆沿實際道路繪製。';
+            } else if (cable) {
+                html = '<b>✓ 已沿實際路網繪製</b>：步行／捷運／叫車段皆依 Google Directions 路網；' +
+                       '纜車段（' + cable + ' 段）因 Google 無此交通模式，以虛線直線示意。';
+            } else {
+                html = '<b>✓ 已沿實際路網繪製</b>：所有路段皆依 Google Directions 沿實際道路與步道繪製，非點對點直線。';
+            }
+            box.innerHTML = html;
         }
 
         function renderRouteLegend() {
@@ -1943,7 +1952,7 @@ sweep(document)})();</script>
             if (stored && !isPlaceholderKey(stored)) {
                 hint.textContent = '目前使用：本機儲存的 Key（' + stored.slice(0, 6) + '…' + stored.slice(-4) + '）';
             } else if (cfgKey && !isPlaceholderKey(cfgKey)) {
-                hint.textContent = '目前使用：config.js 內的 Key。若要換成自己的 Key，填入後按儲存。';
+                hint.textContent = '目前使用：網頁內建的預設 Key（' + cfgKey.slice(0, 6) + '…' + cfgKey.slice(-4) + '）。若要改用其他 Key，填入後按儲存。';
             } else {
                 hint.textContent = '目前尚未設定 Key，路線圖以座標示意圖顯示（功能不受影響）。';
             }
@@ -2013,6 +2022,29 @@ sweep(document)})();</script>
             });
         }
 
+        /** 建立行程地點標記（只建立一次；重試時沿用同一張地圖） */
+        function ensureMapMarkers() {
+            if (!RM.map || !window.google || !window.google.maps) return;
+            if (GM.markers.size) { applyMarkerVisibility(); return; }
+
+            mapLocations.forEach(function (loc) {
+                const style = resolveDayStyle(loc.day);
+                const marker = new google.maps.Marker({
+                    position: { lat: loc.lat, lng: loc.lng },
+                    map: RM.map,
+                    title: loc.name,
+                    icon: makeDayIcon(style, false),
+                    optimized: false,
+                    zIndex: 1
+                });
+                marker.dayKey = style.dayKey;
+                marker.dayStyle = style;
+                marker.addListener('click', function () { highlightMapMarker(loc.id, false); });
+                GM.markers.set(loc.id, marker);
+            });
+            applyMarkerVisibility();
+        }
+
         function createRouteMapInstance() {
             if (RM.map) {
                 RM.renderers.forEach(function (r) { try { r.setMap(null); } catch (e) {} });
@@ -2036,6 +2068,19 @@ sweep(document)})();</script>
             else opts.styles = MUJI_MAP_STYLE;
 
             RM.map = new google.maps.Map(document.getElementById('route-map'), opts);
+
+            /* 讓既有的行程地點標記、天數圖例與圖層面板共用這張地圖 */
+            GM.map = RM.map;
+            if (!GM.infoWindow) {
+                GM.infoWindow = new google.maps.InfoWindow({
+                    pixelOffset: new google.maps.Size(0, -4),
+                    disableAutoPan: false
+                });
+            }
+            ensureMapMarkers();
+            applyAllLayers();
+            fitAllMarkers(false);
+
             if (!RM.dirService) RM.dirService = new google.maps.DirectionsService();
 
             /*
@@ -2071,12 +2116,14 @@ sweep(document)})();</script>
                 showRouteFallback();
                 renderRouteFallback(segs);
                 updateRouteViewBtn();
+                renderRouteDirNote();
                 return;
             }
 
             hideRouteFallback();
             updateRouteViewBtn();
             clearRouteDrawings();
+            RM.dirFailed = {};
             if (!segs.length) return;
 
             const bounds = new google.maps.LatLngBounds();
@@ -2095,7 +2142,13 @@ sweep(document)})();</script>
                 addRouteEndpoint(origin, m.color, i + 1);
                 addRouteEndpoint(dest, m.color, i + 1);
 
-                const done = function () { pending--; if (pending === 0) RM.map.fitBounds(bounds, { top: 40, right: 30, bottom: 40, left: 30 }); };
+                const done = function () {
+                    pending--;
+                    if (pending === 0) {
+                        RM.map.fitBounds(bounds, { top: 40, right: 30, bottom: 40, left: 30 });
+                        renderRouteDirNote();
+                    }
+                };
 
                 if (!m.travel) {           // 纜車：Google 無此交通模式，畫直線
                     drawRoutePolyline(s.pts, m.color, true);
@@ -2125,6 +2178,8 @@ sweep(document)})();</script>
                         RM.renderers.push(r);
                     } else {
                         // Directions 服務未啟用或查無路線 → 退回座標折線，路線照樣看得到
+                        RM.dirFailed[i] = true;
+                        if (status === 'REQUEST_DENIED') RM.dirDenied = true;
                         drawRoutePolyline(s.pts, m.color, true);
                     }
                     done();
@@ -3699,6 +3754,14 @@ sweep(document)})();</script>
 
         /** 建立地圖（僅在 Map 分頁首次開啟時呼叫） */
         function initMap() {
+            /* v11：地圖分頁只保留一張地圖（分段路線圖）。
+               行程地點標記、天數圖例與圖層面板都整合到同一張地圖上，
+               因此這裡直接交給 initRouteMap()，不再建立第二張地圖。 */
+            initRouteMap();
+        }
+
+        /* 舊版「行程地圖」的初始化流程，v11 起不再使用（保留供對照） */
+        function initMapLegacy() {
             if (GM.initialized) return;
             if (GM.loading) return;
 
@@ -3867,10 +3930,16 @@ sweep(document)})();</script>
             GM.loadPromise = null;
             GM.tilesLoaded = false;
             if (GM.tileTimer) { clearTimeout(GM.tileTimer); GM.tileTimer = null; }
-            if (window.google && window.google.maps && document.getElementById('google-map')) {
-                try { createMapInstance(); hideMapStatus(); GM.initialized = true; return; } catch (e) { /* 繼續往下重載 */ }
+            if (window.google && window.google.maps && document.getElementById('route-map')) {
+                try {
+                    createRouteMapInstance();
+                    RM.init = true;
+                    hideRouteFallback();
+                    drawSelectedRoutes();
+                    return;
+                } catch (e) { /* 繼續往下重載 */ }
             }
-            initMap();
+            initRouteMap();
         }
 
         function renderLegend() {
@@ -3932,6 +4001,11 @@ sweep(document)})();</script>
         function resetMapView() {
             if (!GM.map) return;
             clearAllHighlights();
+            /* 有畫路線時，重置回目前選取路線的範圍；否則回到全部景點 */
+            if (RM.map && RM.init && !RM.tileFailed && selectedRouteSegments().length) {
+                drawSelectedRoutes();
+                return;
+            }
             fitAllMarkers(true);
         }
 
