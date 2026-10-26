@@ -946,6 +946,26 @@ sweep(document)})();</script>
             .pwa-install-banner,
             #pwa-header-install { display: none !important; }
         }
+
+        /* ---------- 行李清單（一般／醫療分類） ---------- */
+        .cl-bar { height: 6px; background: #E6E6E0; border-radius: 3px; overflow: hidden; }
+        .cl-bar-fill { height: 100%; width: 0; background: #8D7B68; border-radius: 3px; transition: width 0.25s ease; }
+        .cl-block { border: 1px solid #E6E6E0; border-radius: 6px; overflow: hidden; }
+        .cl-block-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: #F5F5F0; border-bottom: 1px solid #E6E6E0; }
+        .cl-block-title { font-size: 13px; font-weight: 500; color: #333333; display: flex; align-items: center; gap: 6px; }
+        .cl-block-count { font-size: 11px; color: #5C5C5C; white-space: nowrap; }
+        .cl-group { padding: 8px 12px 2px; }
+        .cl-group-title { font-size: 11px; color: #8D7B68; letter-spacing: 0.04em; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+        .cl-group-title::after { content: ''; flex: 1; height: 1px; background: #E6E6E0; }
+        .cl-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 8px; border-radius: 5px; cursor: pointer; transition: background 0.15s; }
+        .cl-item:hover { background: #F5F5F0; }
+        .cl-item input[type="checkbox"] { width: 16px; height: 16px; margin-top: 1px; flex-shrink: 0; accent-color: #8D7B68; cursor: pointer; }
+        .cl-item-text { font-size: 13px; line-height: 1.5; color: #333333; flex: 1; min-width: 0; word-break: break-word; }
+        .cl-item.done .cl-item-text { color: #9A9A90; text-decoration: line-through; }
+        .cl-note { display: inline-block; font-size: 10px; color: #5C5C5C; background: #F5F5F0; border: 1px solid #E6E6E0; border-radius: 3px; padding: 0 5px; margin-left: 5px; vertical-align: 1px; }
+        .cl-del { color: #9A9A90; font-size: 11px; padding: 2px 4px; flex-shrink: 0; background: none; border: 0; cursor: pointer; }
+        .cl-del:hover { color: #A35C5C; }
+        .cl-item:focus-within { background: #F5F5F0; outline: 2px solid #C4B7A6; outline-offset: -2px; }
     </style>
 </head>
 <body class="font-sans antialiased h-screen flex flex-col overflow-hidden bg-muji-bg">
@@ -1211,11 +1231,25 @@ sweep(document)})();</script>
             <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-6">清單與備忘</h2>
 
             <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-6">
-                <h3 class="text-sm font-medium text-muji-dark mb-3"><i class="fa-solid fa-clipboard-list text-muji-brown mr-2"></i>行前準備 CheckList</h3>
-                <div id="checklist-container" class="space-y-3 mb-4">
+                <h3 class="text-sm font-medium text-muji-dark mb-3"><i class="fa-solid fa-clipboard-list text-muji-brown mr-2"></i>行李 CheckList</h3>
+
+                <!-- 整體完成進度 -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-baseline mb-1">
+                        <span class="text-xs text-muji-text">整體完成進度</span>
+                        <span id="cl-total-label" class="text-xs font-medium text-muji-dark">0 / 0</span>
+                    </div>
+                    <div class="cl-bar"><div id="cl-total-bar" class="cl-bar-fill"></div></div>
+                </div>
+
+                <div id="checklist-container" class="space-y-5 mb-4">
                     <!-- Checklists 動態產生 -->
                 </div>
                 <div class="flex gap-2">
+                    <select id="new-check-cat" aria-label="新增物品的分類" class="p-2 text-sm bg-muji-bg border border-muji-border rounded-md text-muji-dark">
+                        <option value="general">一般行李</option>
+                        <option value="medical">醫療行李</option>
+                    </select>
                     <input type="text" id="new-check-item" placeholder="自訂新增物品..." class="w-full p-2 text-sm bg-muji-bg">
                     <button onclick="addChecklistItem()" class="bg-muji-bg border border-muji-border text-muji-dark px-3 rounded-md active:bg-gray-100"><i class="fa-solid fa-plus"></i></button>
                 </div>
@@ -3292,63 +3326,205 @@ sweep(document)})();</script>
             }
         }
 
-        const defaultChecklist = [
-            { id: 1, text: "護照 (效期六個月以上)", checked: false },
-            { id: 2, text: "心臟節律器識別卡 (通關必備)", checked: false },
-            { id: 3, text: "腹膜透析物資 (愛多、2.5%、1.5%、小白帽、口罩等)", checked: false },
-            { id: 4, text: "新加坡網卡 (SIM/eSIM)", checked: false },
-            { id: 5, text: "萬用轉接頭 (新加坡為英規三角)", checked: false },
-            { id: 6, text: "晴雨兩用摺疊傘", checked: false },
-            { id: 7, text: "薄外套 (室內冷氣強)", checked: false }
+        /* ---------- 行李清單（依「新加坡五天四夜_行李清單_優化版.xlsx」） ---------- */
+        const CHECKLIST_KEY = 'muji_sg_checklist_v2';
+        const CHECKLIST_BLOCKS = [
+            {
+                key: 'general', label: '一般行李', icon: 'fa-suitcase-rolling',
+                groups: [
+                    { title: '重要證件與金錢', items: [
+                        ['護照正本(效期需滿半年)與影本2份', '必備'],
+                        ['電子入境卡(SG Arrival Card)憑證', '新增(入境必備，出發前3天內填寫)'],
+                        ['現金(新幣) / 信用卡(含海外回饋)', '必備'],
+                        ['身份證 / 健保卡', '必備']
+                    ] },
+                    { title: '電子與隨身物品', items: [
+                        ['sim卡(機場領取) / 退卡針 / 盒子', '必備'],
+                        ['手機 (需下載Grab)', '必備'],
+                        ['行動電源 / 充電線', '必備'],
+                        ['萬用轉接頭(新加坡為英規三角230V)', '飯店可能有萬用插座'],
+                        ['筆 / 筆記本', '填表用'],
+                        ['晴雨兩用傘 / 輕便雨衣', '新增(11月為新加坡雨季)'],
+                        ['隨身水壺與水壺袋', '隨時補充水分'],
+                        ['行李袋 / 後背包 / 購物袋', '裝戰利品'],
+                        ['環保餐具', '']
+                    ] },
+                    { title: '衣物與配件', items: [
+                        ['短袖衣物 / 輕薄長褲或裙子', '新加坡為熱帶氣候'],
+                        ['薄外套', '修改(防曬及室內冷氣房、搭機用)'],
+                        ['內衣褲 / 免洗內褲 / 襪子', '依天數準備'],
+                        ['好走的運動鞋 / 拖鞋', '走行程必備'],
+                        ['太陽眼鏡 / 帽子', '防曬'],
+                        ['衣物壓縮袋', '節省行李空間']
+                    ] },
+                    { title: '盥洗與日用品', items: [
+                        ['化妝用品', ''],
+                        ['洗面乳 / 卸妝棉 / 護髮霜 / 髮圈', '飯店不一定提供齊全'],
+                        ['牙刷 / 牙膏 / 牙線 / 棉花棒', '自備較環保'],
+                        ['濕紙巾 / 衛生紙', '隨身攜帶擦汗清潔'],
+                        ['防曬乳', '當地日照強烈']
+                    ] },
+                    { title: '外用急救包', items: [
+                        ['OK繃 / 曼秀雷敦 / 燒燙傷藥膏', '小傷口處理'],
+                        ['防蚊液', '防熱帶蚊蟲'],
+                        ['大判貼布 / 休足時間', '舒緩自由行疲勞']
+                    ] },
+                    { title: '常規與備用藥品', items: [
+                        ['個人日常藥品 / 保健品', '按天數準備'],
+                        ['腸胃藥 (胃藥、止瀉藥、益生菌)', '預防水土不服'],
+                        ['綜合感冒藥 / 過敏藥 / 止痛藥', '常備藥'],
+                        ['暈機/暈船/暈車藥', '搭機或前往聖淘沙備用']
+                    ] }
+                ]
+            },
+            {
+                key: 'medical', label: '醫療行李', icon: 'fa-briefcase-medical',
+                groups: [
+                    { title: '核心醫療證件', items: [
+                        ['旅行保單影本 / 英文診斷證明書 / 殘障手冊', '必備'],
+                        ['心臟節律器識別卡', '過海關安檢必備']
+                    ] },
+                    { title: '透析(洗腎)裝備', items: [
+                        ['愛多藥水 (4+1包)', '※排水5秒後全部灌入'],
+                        ['1.5%透析藥水 (4+1包)', '※排水5秒後全部灌入'],
+                        ['2.5%透析藥水 (8+2包)', '※排水5秒後全部灌入'],
+                        ['小白帽', '25個'],
+                        ['電熱毯', '專用於加熱透析藥水'],
+                        ['磁鐵掛勾 / S掛勾', '懸掛藥水用'],
+                        ['量秤', '秤量脫水液體用'],
+                        ['小剪刀 / 擦手紙(1包) / 酒精 / 醫療口罩', '操作前消毒與防護']
+                    ] },
+                    { title: '導管換藥護理', items: [
+                        ['優碘 / 生理食鹽水 / 克菌寧', '傷口消毒'],
+                        ['中棉棒 / ENT棉棒', '換藥用'],
+                        ['普通紗布 / Y紗', '覆蓋傷口'],
+                        ['矽膠膠帶 / 防水膠膜', '固定與防水']
+                    ] },
+                    { title: '常規與備用藥品', items: [
+                        ['常規藥品 / 藥膏 / 鼻噴劑 / 眼藥水', '務必足量並分裝'],
+                        ['血壓機', '量血壓']
+                    ] }
+                ]
+            }
         ];
 
-        function loadChecklist() {
-            let items = JSON.parse(localStorage.getItem('muji_sg_checklist'));
-            if (!items || items.length === 0) {
-                items = defaultChecklist;
-                localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
-            }
-
-            const container = document.getElementById('checklist-container');
-            container.innerHTML = '';
-            items.forEach(function (item) {
-                const checkedClass = item.checked ? 'line-through text-muji-text' : 'text-muji-dark';
-                container.innerHTML += `
-                <label class="flex items-center p-2 bg-muji-bg rounded-md border border-muji-border mb-2 cursor-pointer transition-colors hover:bg-gray-100">
-                    <input type="checkbox" class="w-4 h-4 text-muji-brown rounded border-muji-border mr-3 accent-[#8D7B68]"
-                           ${item.checked ? 'checked' : ''} onchange="toggleCheck(${item.id})">
-                    <span class="text-sm flex-1 ${checkedClass}">${item.text}</span>
-                    <button onclick="event.preventDefault(); deleteCheckItem(${item.id})" class="text-muji-text text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
-                </label>
-                `;
+        function clBuildDefaults() {
+            const out = [];
+            CHECKLIST_BLOCKS.forEach(function (block) {
+                block.groups.forEach(function (g, gi) {
+                    g.items.forEach(function (it, ii) {
+                        out.push({
+                            id: block.key + '-' + gi + '-' + ii,
+                            cat: block.key,
+                            group: g.title,
+                            text: it[0],
+                            note: it[1] || '',
+                            checked: false
+                        });
+                    });
+                });
             });
+            return out;
+        }
+
+        function clLoad() {
+            let items = null;
+            try { items = JSON.parse(localStorage.getItem(CHECKLIST_KEY)); } catch (e) { items = null; }
+            if (!items || !items.length) {
+                items = clBuildDefaults();
+                clSave(items);
+            }
+            return items;
+        }
+
+        function clSave(items) {
+            try { localStorage.setItem(CHECKLIST_KEY, JSON.stringify(items)); } catch (e) { /* 忽略 */ }
+        }
+
+        function clEsc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function clGroupHtml(title, list) {
+            let h = '<div class="cl-group"><div class="cl-group-title">' + clEsc(title) + '</div>';
+            list.forEach(function (item) {
+                h += '<label class="cl-item' + (item.checked ? ' done' : '') + '">' +
+                    '<input type="checkbox" ' + (item.checked ? 'checked' : '') + ' onchange="toggleCheck(\'' + item.id + '\')">' +
+                    '<span class="cl-item-text">' + clEsc(item.text) +
+                    (item.note ? '<span class="cl-note">' + clEsc(item.note) + '</span>' : '') + '</span>' +
+                    '<button type="button" class="cl-del" onclick="event.preventDefault(); deleteCheckItem(\'' + item.id + '\')" aria-label="刪除"><i class="fa-solid fa-xmark"></i></button>' +
+                    '</label>';
+            });
+            return h + '</div>';
+        }
+
+        function loadChecklist() {
+            const items = clLoad();
+            const container = document.getElementById('checklist-container');
+            if (!container) return;
+            let html = '';
+            CHECKLIST_BLOCKS.forEach(function (block) {
+                const blockItems = items.filter(function (i) { return i.cat === block.key; });
+                const done = blockItems.filter(function (i) { return i.checked; }).length;
+                const pct = blockItems.length ? Math.round(done / blockItems.length * 100) : 0;
+                html += '<div class="cl-block">';
+                html += '<div class="cl-block-head"><span class="cl-block-title"><i class="fa-solid ' + block.icon + ' text-muji-brown"></i>' + block.label + '</span>';
+                html += '<span class="cl-block-count">' + done + ' / ' + blockItems.length + '（' + pct + '%）</span></div>';
+                html += '<div class="cl-bar" style="border-radius:0;height:4px;"><div class="cl-bar-fill" style="width:' + pct + '%"></div></div>';
+                const seen = {};
+                block.groups.forEach(function (g) {
+                    const gi = blockItems.filter(function (i) { return i.group === g.title; });
+                    if (!gi.length) return;
+                    seen[g.title] = 1;
+                    html += clGroupHtml(g.title, gi);
+                });
+                const custom = blockItems.filter(function (i) { return !seen[i.group]; });
+                if (custom.length) html += clGroupHtml('自訂項目', custom);
+                html += '</div>';
+            });
+            container.innerHTML = html;
+
+            const total = items.length;
+            const tdone = items.filter(function (i) { return i.checked; }).length;
+            const tpct = total ? Math.round(tdone / total * 100) : 0;
+            const lbl = document.getElementById('cl-total-label');
+            const bar = document.getElementById('cl-total-bar');
+            if (lbl) lbl.textContent = tdone + ' / ' + total + '（' + tpct + '%）';
+            if (bar) bar.style.width = tpct + '%';
         }
 
         function toggleCheck(id) {
-            let items = JSON.parse(localStorage.getItem('muji_sg_checklist'));
+            const items = clLoad();
             const item = items.find(function (i) { return i.id === id; });
             if (item) {
                 item.checked = !item.checked;
-                localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
+                clSave(items);
                 loadChecklist();
             }
         }
 
         function addChecklistItem() {
             const input = document.getElementById('new-check-item');
-            if (input.value.trim() !== '') {
-                let items = JSON.parse(localStorage.getItem('muji_sg_checklist') || '[]');
-                items.push({ id: Date.now(), text: input.value.trim(), checked: false });
-                localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
-                input.value = '';
-                loadChecklist();
-            }
+            const sel = document.getElementById('new-check-cat');
+            if (!input || input.value.trim() === '') return;
+            const items = clLoad();
+            items.push({
+                id: 'c-' + Date.now(),
+                cat: (sel && sel.value) || 'general',
+                group: '自訂項目',
+                text: input.value.trim(),
+                note: '',
+                checked: false
+            });
+            clSave(items);
+            input.value = '';
+            loadChecklist();
         }
 
         function deleteCheckItem(id) {
-            let items = JSON.parse(localStorage.getItem('muji_sg_checklist'));
+            let items = clLoad();
             items = items.filter(function (i) { return i.id !== id; });
-            localStorage.setItem('muji_sg_checklist', JSON.stringify(items));
+            clSave(items);
             loadChecklist();
         }
 
