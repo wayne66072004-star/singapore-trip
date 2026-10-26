@@ -960,6 +960,10 @@ sweep(document)})();</script>
         .cl-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 8px; border-radius: 5px; cursor: pointer; transition: background 0.15s; }
         .cl-item:hover { background: #F5F5F0; }
         .cl-item input[type="checkbox"] { width: 16px; height: 16px; margin-top: 1px; flex-shrink: 0; accent-color: #8D7B68; cursor: pointer; }
+
+        /* ---------- 本機儲存提示小字（記帳／行李清單／本地檔案共用） ---------- */
+        .local-note { display: flex; align-items: flex-start; gap: 5px; font-size: 10px; line-height: 1.7; color: #9A9A90; }
+        .local-note i { margin-top: 3px; flex-shrink: 0; color: #B8AC9C; }
         .cl-item-text { font-size: 13px; line-height: 1.5; color: #333333; flex: 1; min-width: 0; word-break: break-word; }
         .cl-item.done .cl-item-text { color: #9A9A90; text-decoration: line-through; }
         .cl-note { display: inline-block; font-size: 10px; color: #5C5C5C; background: #F5F5F0; border: 1px solid #E6E6E0; border-radius: 3px; padding: 0 5px; margin-left: 5px; vertical-align: 1px; }
@@ -1178,6 +1182,8 @@ sweep(document)})();</script>
         <section id="tab-wallet" class="tab-content">
             <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-6">記帳與匯率</h2>
 
+            <p class="local-note mt-1 mb-6"><i class="fa-solid fa-circle-info"></i><span>此紀錄僅儲存於本機（此裝置的這個瀏覽器），不會與其他裝置或家人同步；家人用自己的手機開啟，看到的會是空白清單。</span></p>
+
             <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-6">
                 <div class="flex justify-between items-center mb-3">
                     <span class="text-sm font-medium text-muji-dark">即時匯率 (SGD ➔ TWD)</span>
@@ -1232,6 +1238,8 @@ sweep(document)})();</script>
 
             <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mb-6">
                 <h3 class="text-sm font-medium text-muji-dark mb-3"><i class="fa-solid fa-clipboard-list text-muji-brown mr-2"></i>行李 CheckList</h3>
+
+                <p class="local-note mb-4"><i class="fa-solid fa-circle-info"></i><span>此紀錄僅儲存於本機（此裝置的這個瀏覽器），不會與其他裝置或家人同步；家人用自己的手機開啟，看到的會是空白清單。</span></p>
 
                 <!-- 整體完成進度 -->
                 <div class="mb-4">
@@ -1313,6 +1321,8 @@ sweep(document)})();</script>
                     <span id="lf-count" class="text-[10px] text-muji-text/70"></span>
                 </div>
                 <p class="text-[11px] text-muji-text leading-relaxed mb-3">電子機票、各項門票、SIM 卡憑證等，儲存在此裝置的瀏覽器中，重新整理後仍會保留。</p>
+
+                <p class="local-note mb-3"><i class="fa-solid fa-circle-info"></i><span>此紀錄僅儲存於本機（此裝置的這個瀏覽器），不會與其他裝置或家人同步；家人用自己的手機開啟，看到的會是空白清單。</span></p>
 
                 <div id="lf-filters" class="lf-filters" role="tablist" aria-label="檔案分類篩選"></div>
 
