@@ -558,6 +558,66 @@ sweep(document)})();</script>
             padding: 5px 1px 0;
         }
 
+        /* ---------- 分段路線（Route Segments） ---------- */
+        .route-block { margin-bottom: 14px; }
+        .route-daytabs { display: flex; gap: 6px; overflow-x: auto; padding: 2px 1px 6px; margin-bottom: 6px; scrollbar-width: none; }
+        .route-daytabs::-webkit-scrollbar { display: none; }
+        .route-day-btn { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; line-height: 1; padding: 7px 11px; border-radius: 999px; border: 1px solid #E6E6E0; background: #FFF; color: #5C5C5C; transition: background .15s, color .15s; }
+        .route-day-btn.active { color: #FFF; border-color: transparent; }
+        .route-day-btn .rdot { width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; }
+        .route-day-btn .rcount { font-size: 9px; opacity: .62; margin-left: 1px; }
+
+        .route-seglist { display: flex; gap: 6px; overflow-x: auto; padding: 1px 1px 7px; margin-bottom: 8px; scrollbar-width: none; }
+        .route-seglist::-webkit-scrollbar { display: none; }
+        .route-seg-btn { flex: 0 0 auto; max-width: 214px; text-align: left; font-size: 10.5px; line-height: 1.45; padding: 6px 10px; border-radius: 7px; border: 1px solid #E6E6E0; background: #FFF; color: #5C5C5C; transition: border-color .15s, background .15s; }
+        .route-seg-btn.active { border-color: #8D7B68; background: #F7F3EC; color: #3F3A33; }
+        .route-seg-btn .rs-idx { display: inline-block; min-width: 14px; height: 14px; line-height: 14px; text-align: center; border-radius: 999px; color: #FFF; font-size: 8.5px; font-weight: 700; margin-right: 4px; vertical-align: 1px; }
+        .route-seg-btn .rs-dur { display: block; font-size: 9px; color: #9A9A90; margin-top: 1px; }
+
+        .route-summary { border: 1px solid #E6E6E0; border-radius: 8px; background: #FBFAF7; padding: 10px 12px; margin-bottom: 9px; }
+        .rs-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+        .rs-day { font-size: 9px; font-weight: 700; color: #FFF; padding: 2px 7px; border-radius: 999px; letter-spacing: .02em; }
+        .rs-title { font-size: 10px; color: #9A9A90; letter-spacing: .04em; }
+        .rs-route { font-size: 13px; font-weight: 600; color: #3F3A33; line-height: 1.5; margin-bottom: 6px; }
+        .rs-arrow { font-size: 10px; color: #B8AC9C; margin: 0 3px; }
+        .rs-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+        .rs-pill { font-size: 9.5px; line-height: 1.2; padding: 2.5px 7px; border-radius: 999px; border: 1px solid #E6E6E0; background: #FFF; color: #5C5C5C; }
+        .rs-way { font-size: 10px; line-height: 1.6; color: #7A7469; margin-bottom: 4px; }
+        .rs-way b { font-weight: 600; color: #5C5C5C; }
+        .rs-acc { font-size: 10px; line-height: 1.6; color: #56704F; background: #F1F4EF; border: 1px solid #DFE7DB; border-radius: 6px; padding: 5px 7px; }
+        .rs-list { display: flex; flex-direction: column; gap: 3px; }
+        .rs-row { display: flex; align-items: center; gap: 6px; font-size: 10.5px; line-height: 1.45; color: #5C5C5C; }
+        .rs-row .rs-idx { flex: 0 0 auto; min-width: 13px; height: 13px; line-height: 13px; text-align: center; border-radius: 999px; color: #FFF; font-size: 8px; font-weight: 700; }
+        .rs-row-main { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rs-row-meta { flex: 0 0 auto; font-size: 9px; color: #9A9A90; }
+        .rs-empty { font-size: 10px; color: #9A9A90; }
+
+        .route-shell { height: 46vh; min-height: 250px; }
+        #route-map { position: absolute; inset: 0; background-color: #EFEFE9; }
+        .route-fallback { position: absolute; inset: 0; z-index: 5; display: none; background: #F5F5F0; }
+        .route-fallback.show { display: block; }
+        .route-fallback svg { display: block; width: 100%; height: 100%; }
+        .rf-head { position: absolute; top: 5px; left: 8px; z-index: 2; font-size: 9px; letter-spacing: .06em; color: #9A9A90; }
+        .rf-sub { margin-left: 6px; opacity: .8; }
+        .rf-note { position: absolute; left: 7px; right: 7px; bottom: 6px; z-index: 2; font-size: 9.5px; line-height: 1.5; color: #7A7469; background: rgba(255,255,255,.92); border: 1px solid #E6E6E0; border-radius: 6px; padding: 5px 7px; }
+        .rf-note b { font-weight: 600; color: #5C5C5C; }
+        .rf-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9A9A90; }
+
+        .route-view-toggle { position: absolute; right: 8px; bottom: 8px; z-index: 8; }
+        .route-view-toggle button { display: inline-flex; align-items: center; gap: 4px; font-size: 9.5px; padding: 4px 8px; border-radius: 5px; background: rgba(255,255,255,.96); border: 1px solid #E6E6E0; color: #5C5C5C; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+
+        .route-legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 7px 1px 10px; }
+        .rl-item { display: inline-flex; align-items: center; gap: 4px; font-size: 9.5px; color: #7A7469; }
+        .rl-line { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+
+        .route-keybar { margin-top: 2px; }
+        .route-key-head { display: flex; align-items: center; gap: 5px; width: 100%; padding: 6px 2px; font-size: 10px; color: #9A9A90; }
+        .route-key-head .fa-chevron-down { margin-left: auto; font-size: 8px; transition: transform .18s; }
+        .route-keybar.open .route-key-head .fa-chevron-down { transform: rotate(180deg); }
+        .route-key-panel { display: none; padding: 0 1px 4px; }
+        .route-keybar.open .route-key-panel { display: block; }
+        .route-key-input { width: 100%; font-size: 11px; padding: 6px 9px; border: 1px solid #E6E6E0; border-radius: 6px; background: #FFF; color: #3F3A33; margin-bottom: 6px; }
+
         /* ---------- 地圖狀態提示層 ---------- */
         .map-status {
             position: absolute;
@@ -1085,6 +1145,57 @@ sweep(document)})();</script>
 
         <!-- Tab 6: MAP (List View) -->
         <section id="tab-map" class="tab-content">
+            <!-- ===== 分段路線（Route Segments） ===== -->
+            <div class="route-block">
+                <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-2 ml-1">分段路線</h2>
+                <p class="text-[11px] text-muji-text leading-relaxed mb-3">
+                    依日期選擇：可單看某一段，或一次看該日全部路線。下方列出起點、終點、途經點與步行距離。
+                </p>
+
+                <!-- 日期膠囊 -->
+                <div class="route-daytabs" id="route-daytabs" role="tablist" aria-label="依日期選擇路線"></div>
+
+                <!-- 該日的分段清單 -->
+                <div class="route-seglist" id="route-seglist" aria-label="選擇路線分段"></div>
+
+                <!-- 所選路線摘要 -->
+                <div class="route-summary" id="route-summary"></div>
+
+                <!-- 路線圖：Google Maps 或座標示意圖 -->
+                <div class="map-shell border border-muji-border shadow-sm route-shell">
+                    <div id="route-map"></div>
+                    <div id="route-fallback" class="route-fallback"></div>
+                    <div class="route-view-toggle">
+                        <button type="button" onclick="toggleRouteView()" aria-label="切換路線圖顯示方式">
+                            <i class="fa-solid fa-layer-group"></i><span id="route-view-label">示意圖</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 路線圖例 -->
+                <div class="route-legend" id="route-legend"></div>
+
+                <!-- API Key 設定（存於本機 localStorage） -->
+                <div class="route-keybar" id="route-keybar">
+                    <button type="button" class="route-key-head" onclick="toggleRouteKeyPanel()" aria-expanded="false" aria-controls="route-key-panel">
+                        <i class="fa-solid fa-key"></i><span>Google Maps API Key 設定</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="route-key-panel" id="route-key-panel">
+                        <p class="text-[10px] text-muji-text leading-relaxed mb-2">
+                            填入自己的 Google Maps JavaScript API Key，只會存在<b>這台裝置的這個瀏覽器</b>（localStorage），不會上傳。
+                            沒有 Key 時路線圖會自動改用座標示意圖，其餘功能完全不受影響。
+                        </p>
+                        <input id="route-key-input" class="route-key-input" type="text" placeholder="AIza..." autocomplete="off" spellcheck="false" inputmode="text">
+                        <div class="flex gap-2">
+                            <button type="button" onclick="saveRouteKey()" class="flex-1 bg-muji-brown text-white text-[11px] py-1.5 rounded-md active:opacity-80">儲存並重新載入</button>
+                            <button type="button" onclick="clearRouteKey()" class="flex-1 bg-muji-bg border border-muji-border text-muji-dark text-[11px] py-1.5 rounded-md active:bg-gray-100">清除</button>
+                        </div>
+                        <p id="route-key-hint" class="text-[10px] text-muji-text/70 leading-relaxed mt-2"></p>
+                    </div>
+                </div>
+            </div>
+
             <!-- 內嵌於 Map 分頁中的地圖區塊 -->
             <div class="sticky top-0 z-40 bg-muji-bg pt-2 pb-2">
                 <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-2 ml-1">行程地圖</h2>
@@ -1464,6 +1575,733 @@ sweep(document)})();</script>
                 '13:00': { level: 'full', effort: '輕鬆', route: '出境大廳走電梯，可請機場提供輪椅推送服務', note: '主動告知安檢人員心律調節器；機場可協助輪椅與特殊通關。' }
             }
         };
+
+        /* ============================================================
+         *  分段路線（Route Segments）
+         * ------------------------------------------------------------
+         *  每一段 = 一個明確的起點 → 終點（含途經點），在地圖上畫成獨立線條。
+         *  mode：walk 步行 / mrt 捷運 / grab 叫車 / cablecar 纜車
+         *  acc ：full 有無障礙通道 / partial 部分有 / none 無
+         * ============================================================ */
+        const ROUTE_MODE_META = {
+            walk:     { label: '步行', color: '#8D7B68', travel: 'WALKING' },
+            mrt:      { label: '捷運', color: '#4A6FA5', travel: 'TRANSIT' },
+            grab:     { label: '叫車', color: '#A8705C', travel: 'DRIVING' },
+            cablecar: { label: '纜車', color: '#6E8B6B', travel: null }
+        };
+
+        const ROUTE_DATA = {
+            1: [
+                { title: '抵達後直達飯店', from: '樟宜機場 T2', to: 'PARKROYAL COLLECTION',
+                  via: ['ECP 東海岸公園大道'], mode: 'grab', dist: '20.5 km', time: '25 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: 'Grab 直達飯店大廳，全程無步行負擔；行李多又有醫療物資，這是最省力的一段。',
+                  pts: [[1.3644, 103.9915], [1.3300, 103.9400], [1.3050, 103.9000], [1.2913, 103.8577]] },
+
+                { title: '飯店 → 美食街', from: '飯店大廳', to: 'Marina Square 三樓美食街',
+                  via: ['室內連通道'], mode: 'walk', dist: '250 m', time: '3 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '走飯店與商場之間的室內連通道，有電梯與坡道，不需過馬路、全程有空調。',
+                  pts: [[1.2913, 103.8577], [1.2909, 103.8575], [1.2905, 103.8578]] },
+
+                { title: '傍晚散步到花園', from: '飯店大廳', to: '濱海灣花園',
+                  via: ['雙螺旋橋 Helix Bridge'], mode: 'walk', dist: '1.3 km', time: '15 分',
+                  acc: 'partial', effort: '中等',
+                  note: '雙螺旋橋兩端都設有電梯可上橋，橋面是緩坡而非階梯；請走電梯、避開樓梯。若長輩開始喘，改走 Bayfront 站地下道，或直接叫 Grab（約 5 分）。',
+                  pts: [[1.2913, 103.8577], [1.2895, 103.8600], [1.2875, 103.8610], [1.2840, 103.8628], [1.2816, 103.8636]] },
+
+                { title: '花園 → 水舞廣場', from: '濱海灣花園', to: '金沙水舞廣場 Event Plaza',
+                  via: ['金沙酒店內部通道'], mode: 'walk', dist: '800 m', time: '12 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '穿金沙酒店內部通道，再搭商場電梯到濱水廣場；全程室內有空調，地面平坦。',
+                  pts: [[1.2816, 103.8636], [1.2830, 103.8610], [1.2838, 103.8591]] },
+
+                { title: '散場回飯店', from: '金沙水舞廣場', to: '飯店大廳',
+                  via: ['雙螺旋橋電梯路線'], mode: 'walk', dist: '1.1 km', time: '15 分',
+                  acc: 'partial', effort: '中等',
+                  note: '同雙螺旋橋，兩端電梯可完全避開樓梯。散場人潮洶湧，長輩可提前 2 分鐘離場，或直接叫 Grab（約 5 分）。',
+                  pts: [[1.2838, 103.8591], [1.2875, 103.8610], [1.2895, 103.8600], [1.2913, 103.8577]] },
+
+                { title: '宵夜：老巴剎', from: '金沙水舞廣場', to: '老巴剎 Lau Pa Sat',
+                  via: ['Bayfront 站', 'Downtown 站'], mode: 'mrt', dist: '350 m 步行 + 1 站', time: '8 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '步行 3 分到 Bayfront 站（有電梯）→ 藍線 1 站到 Downtown → 步行 3 分。全線車站皆有電梯。',
+                  pts: [[1.2838, 103.8591], [1.2822, 103.8598], [1.2806, 103.8504]] }
+            ],
+
+            2: [
+                { title: '買早餐', from: '飯店大廳', to: '亞坤咖椰吐司 (Marina Square)',
+                  via: ['室內連通道／地下街'], mode: 'walk', dist: '350 m', time: '6 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '走室內連通道或地下街，有電梯，全程無階梯。',
+                  pts: [[1.2913, 103.8577], [1.2905, 103.8578], [1.2907, 103.8572]] },
+
+                { title: '魚尾獅公園拍照', from: '飯店大廳', to: '魚尾獅公園',
+                  via: ['Marina Square', '濱海藝術中心 Esplanade', '金禧橋 Jubilee Bridge'],
+                  mode: 'walk', dist: '1.2 km', time: '18 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '改走金禧橋：飯店 → 室內連通道經 Marina Square → 濱海藝術中心 1F 出水岸長廊往西 → 金禧橋上橋 → 下橋即魚尾獅公園廣場。全程無階梯。留意兩點：①橋面是跨河緩坡（上升約 3～4 公尺），上橋前先在水岸長廊座椅休息一次；②橋上無遮蔭。❗別走濱海橋：該橋兩端要爬樓梯才能上到橋面人行道。',
+                  pts: [[1.2913, 103.8577], [1.2905, 103.8578], [1.2896, 103.8554], [1.2883, 103.8543], [1.2868, 103.8545]] },
+
+                { title: '魚尾獅 → 新達城', from: '魚尾獅公園', to: 'Suntec City',
+                  via: ['CityLink Mall 地下道'], mode: 'walk', dist: '950 m', time: '15 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '走 CityLink Mall 地下道，全程平坦且有電梯與坡道，可完全避開日曬。',
+                  pts: [[1.2868, 103.8545], [1.2900, 103.8545], [1.2930, 103.8550], [1.2950, 103.8587]] },
+
+                { title: '財富之泉 → 鴨子船', from: '新達城財富之泉', to: 'DUCKtours 櫃檯',
+                  via: ['商場地面層中庭'], mode: 'walk', dist: '200 m', time: '3 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '商場內搭電梯到地面層中庭，地面平坦。登船處需走一小段斜坡／階梯上船，請事先告知船公司有行動不便長輩，安排優先登船與人員協助。',
+                  pts: [[1.2952, 103.8589], [1.2955, 103.8578]] },
+
+                { title: '返回飯店', from: 'Suntec City', to: '飯店大廳',
+                  via: ['行人天橋／地面斑馬線'], mode: 'walk', dist: '400 m', time: '5 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '兩棟建築幾乎相鄰，走行人天橋（有電梯）或地面斑馬線即可，過馬路即達。',
+                  pts: [[1.2950, 103.8587], [1.2930, 103.8580], [1.2913, 103.8577]] },
+
+                { title: '晚餐：珍寶海鮮', from: '飯店大廳', to: '珍寶海鮮 (Clarke Quay)',
+                  via: ['Promenade 站', 'Fort Canning 站'], mode: 'mrt', dist: '步行 6 分 + 5 站', time: '16 分',
+                  acc: 'partial', effort: '中等',
+                  note: '捷運站內皆有電梯；Fort Canning 站 A 出口到餐廳有坡道。視長輩剛睡醒的體力狀況，隨時改叫 Grab（約 10 分）最省力。',
+                  pts: [[1.2913, 103.8577], [1.2920, 103.8590], [1.2922, 103.8443], [1.2897, 103.8447]] }
+            ],
+
+            3: [
+                { title: '前往動物園', from: '飯店大廳', to: '新加坡動物園大門',
+                  via: ['Grab 直達'], mode: 'grab', dist: '18 km', time: '35 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: 'Grab 直達園區大門，無步行負擔。搭 MRT 轉公車需走遠路且超過 1 小時，長途強烈建議包車。',
+                  pts: [[1.2913, 103.8577], [1.3400, 103.8300], [1.4043, 103.7930]] },
+
+                { title: '動物園 → 飯店', from: '新加坡動物園', to: '飯店大廳',
+                  via: ['Grab 直達'], mode: 'grab', dist: '18 km', time: '35 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '原車返回飯店，直接回房午休透析，不必在園區門口等車走動。',
+                  pts: [[1.4043, 103.7930], [1.3400, 103.8300], [1.2913, 103.8577]] },
+
+                { title: '小印度吃叻沙', from: '飯店大廳', to: '結霜橋叻沙',
+                  via: ['Promenade 站', 'Little India 站'], mode: 'mrt', dist: '步行 6 分 + 3 站', time: '12 分',
+                  acc: 'partial', effort: '中等',
+                  note: '捷運站內有電梯；Little India 站 C 出口步行 3 分。小印度街區人行道較窄、部分路段不平，請放慢腳步。',
+                  pts: [[1.2913, 103.8577], [1.2920, 103.8590], [1.3000, 103.8520], [1.3064, 103.8492], [1.3060, 103.8560]] },
+
+                { title: '印度文化巡禮', from: '結霜橋叻沙', to: '竹腳中心 / 印度廟',
+                  via: ['小印度街區'], mode: 'walk', dist: '400 m', time: '5 分',
+                  acc: 'partial', effort: '中等',
+                  note: '竹腳中心有電梯；印度廟需脫鞋、地面可能濕滑，長輩可在廟宇外圍等候，不必進殿。',
+                  pts: [[1.3060, 103.8560], [1.3064, 103.8505], [1.3050, 103.8505]] },
+
+                { title: '前往蘇丹回教堂', from: '印度廟', to: '蘇丹回教堂',
+                  via: ['Little India 站', 'Bugis 站'], mode: 'mrt', dist: '步行 11 分 + 2 站', time: '15 分',
+                  acc: 'partial', effort: '中等',
+                  note: '捷運站內有電梯；Bugis 站到蘇丹回教堂步行約 7 分，人行道平坦，可沿途逛武吉士街。',
+                  pts: [[1.3050, 103.8505], [1.3064, 103.8492], [1.3007, 103.8553], [1.3023, 103.8590]] },
+
+                { title: '回飯店休息', from: '蘇丹回教堂', to: '飯店大廳',
+                  via: ['Bugis 站', 'Promenade 站'], mode: 'mrt', dist: '步行 8 分 + 1 站', time: '10 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '捷運全線有電梯；Promenade 站步行 3 分回房。',
+                  pts: [[1.3023, 103.8590], [1.3007, 103.8553], [1.2932, 103.8611], [1.2913, 103.8577]] }
+            ],
+
+            4: [
+                { title: '前往港灣纜車站', from: '飯店大廳', to: 'HarbourFront Tower 2 纜車站',
+                  via: ['Promenade 站', 'Chinatown 站', 'HarbourFront 站'], mode: 'mrt', dist: '步行 17 分 + 6 站', time: '25 分',
+                  acc: 'partial', effort: '中等',
+                  note: '站內皆有電梯，HarbourFront 站 B 出口有電梯直達 Tower 2。轉乘兩次較耗時，若長輩累，改叫 Grab（約 15 分）。',
+                  pts: [[1.2913, 103.8577], [1.2932, 103.8611], [1.2846, 103.8438], [1.2653, 103.8223], [1.2655, 103.8202]] },
+
+                { title: '纜車入島', from: 'HarbourFront Tower 2', to: '聖淘沙纜車站',
+                  via: ['花柏山線'], mode: 'cablecar', dist: '空中 1.7 km', time: '15 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '纜車站設電梯與無障礙動線；上車時請工作人員協助，全程坐著不必走。',
+                  pts: [[1.2655, 103.8202], [1.2620, 103.8180], [1.2548, 103.8178]] },
+
+                { title: '島內移動', from: '聖淘沙纜車站', to: '滑車區 / 巴拉灣海灘',
+                  via: ['免費海灘接駁車'], mode: 'walk', dist: '600 m', time: '8 分',
+                  acc: 'partial', effort: '中等',
+                  note: '纜車站到滑車區有坡道；滑車區本身有階梯。建議改搭免費海灘接駁車（Beach Shuttle），長輩在一側等候拍照即可。',
+                  pts: [[1.2548, 103.8178], [1.2494, 103.8238], [1.2468, 103.8240]] },
+
+                { title: '出島吃午餐', from: '聖淘沙', to: '麥士威熟食中心',
+                  via: ['Grab 兩台車'], mode: 'grab', dist: '9 km', time: '15 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '8 人出島要轉乘兩次捷運、非常耗體力；花錢搭車直達最明智，也順便避開正午高溫。',
+                  pts: [[1.2468, 103.8240], [1.2650, 103.8350], [1.2803, 103.8447]] },
+
+                { title: '麥士威 → 佛牙寺', from: '麥士威熟食中心', to: '佛牙寺',
+                  via: ['過馬路'], mode: 'walk', dist: '250 m', time: '3 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '過馬路 2 分鐘即達。佛牙寺走側門無障礙入口，電梯可直達 4 樓；周邊老街步行距離都在 5 分鐘內。',
+                  pts: [[1.2803, 103.8447], [1.2813, 103.8443]] },
+
+                { title: '回飯店午休', from: '佛牙寺', to: '飯店大廳',
+                  via: ['Chinatown 站', 'Promenade 站'], mode: 'mrt', dist: '步行 8 分 + 4 站', time: '16 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '捷運全線有電梯；Chinatown 站步行 5 分。',
+                  pts: [[1.2813, 103.8443], [1.2846, 103.8438], [1.2932, 103.8611], [1.2913, 103.8577]] },
+
+                { title: '晚餐：了凡油雞飯', from: '飯店大廳', to: '了凡油雞飯總店',
+                  via: ['Promenade 站', 'Chinatown 站'], mode: 'mrt', dist: '步行 7 分 + 4 站', time: '15 分',
+                  acc: 'partial', effort: '中等',
+                  note: '捷運站內有電梯；Chinatown 站到總店步行 4 分、路面平坦。若長輩累了，也可由小隊外帶回房。',
+                  pts: [[1.2913, 103.8577], [1.2932, 103.8611], [1.2846, 103.8438], [1.2826, 103.8437]] }
+            ],
+
+            5: [
+                { title: '退房前往機場', from: '飯店大廳', to: '樟宜機場 T2 出境大廳',
+                  via: ['ECP 東海岸公園大道'], mode: 'grab', dist: '20.5 km', time: '25 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '帶著行李搭 Grab 直達出境大廳最輕鬆，不必拖行李走捷運站。',
+                  pts: [[1.2913, 103.8577], [1.3050, 103.9000], [1.3300, 103.9400], [1.3644, 103.9915]] },
+
+                { title: '逛星耀樟宜', from: 'T2 出境大廳', to: 'Jewel 星耀樟宜',
+                  via: ['室內連通道'], mode: 'walk', dist: '400 m', time: '7 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '走室內連通道，有平面手扶梯與電梯可代步；Jewel 全區各樓層皆有電梯，L1 服務台可借輪椅。',
+                  pts: [[1.3644, 103.9915], [1.3625, 103.9905], [1.3602, 103.9897]] },
+
+                { title: '看雨漩渦', from: 'Jewel L1 中庭', to: '雨漩渦觀景平台',
+                  via: ['森林谷 Shiseido Forest Valley'], mode: 'walk', dist: '150 m', time: '3 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '搭電梯到各層觀景平台看 40 公尺室內瀑布，全程無階梯；地面層中庭也看得到，不必爬高。',
+                  pts: [[1.3602, 103.9897], [1.3601, 103.9896]] },
+
+                { title: '通關前往登機門', from: 'Jewel', to: 'T2 登機門',
+                  via: ['出境大廳', '證照查驗', 'SkyTrain'], mode: 'walk', dist: '700 m', time: '12 分',
+                  acc: 'full', effort: '輕鬆',
+                  note: '建議預留 60～80 分鐘通關。全程走電梯與平面手扶梯；主動告知安檢人員心律調節器，可改走人工手檢通道。',
+                  pts: [[1.3601, 103.9896], [1.3625, 103.9905], [1.3640, 103.9910], [1.3630, 103.9890]] }
+            ]
+        };
+
+        /* ---------------- 路線圖狀態 ---------------- */
+        const RM = {
+            init: false,
+            map: null,
+            day: 1,
+            sel: 'all',           // 'all' 或 分段索引
+            view: 'auto',         // 'auto' | 'schematic'
+            renderers: [],
+            overlays: [],
+            dirService: null,
+            loading: false
+        };
+
+        const ROUTE_KEY_STORAGE = 'muji_sg_gmaps_key_v1';
+
+        function getStoredRouteKey() {
+            try { return (localStorage.getItem(ROUTE_KEY_STORAGE) || '').trim(); } catch (e) { return ''; }
+        }
+
+        function routeSegmentsOf(day) {
+            return ROUTE_DATA[day] || [];
+        }
+
+        /** 目前選取要畫的路線（單段或該日全部） */
+        function selectedRouteSegments() {
+            const segs = routeSegmentsOf(RM.day);
+            if (RM.sel === 'all') return segs;
+            const one = segs[RM.sel];
+            return one ? [one] : [];
+        }
+
+        function renderRouteUI() {
+            // 日期膠囊
+            const tabs = document.getElementById('route-daytabs');
+            if (tabs) {
+                let html = '';
+                [1, 2, 3, 4, 5].forEach(function (n) {
+                    const active = (n === RM.day);
+                    const color = DAY_COLORS[n] || DAY_COLOR_HOTEL;
+                    const cnt = routeSegmentsOf(n).length;
+                    html += '<button type="button" class="route-day-btn' + (active ? ' active' : '') + '" ' +
+                        'onclick="selectRouteDay(' + n + ')" role="tab" aria-selected="' + active + '" ' +
+                        'style="' + (active ? 'background:' + color + ';' : '') + '">' +
+                        '<span class="rdot" style="background:' + (active ? '#FFF' : color) + '"></span>' +
+                        'Day ' + n + '<span class="rcount">' + cnt + '</span></button>';
+                });
+                tabs.innerHTML = html;
+            }
+
+            // 分段清單：全部 + 各段
+            const list = document.getElementById('route-seglist');
+            if (list) {
+                const segs = routeSegmentsOf(RM.day);
+                const color = DAY_COLORS[RM.day] || DAY_COLOR_HOTEL;
+                let html = '<button type="button" class="route-seg-btn' + (RM.sel === 'all' ? ' active' : '') + '" ' +
+                    'onclick="selectRouteSeg(\'all\')">' +
+                    '<i class="fa-solid fa-route" style="color:' + color + ';margin-right:4px"></i>全部路線' +
+                    '<span class="rs-dur">' + segs.length + ' 段 · 一次顯示</span></button>';
+                segs.forEach(function (s, i) {
+                    const m = ROUTE_MODE_META[s.mode] || ROUTE_MODE_META.walk;
+                    html += '<button type="button" class="route-seg-btn' + (RM.sel === i ? ' active' : '') + '" ' +
+                        'onclick="selectRouteSeg(' + i + ')">' +
+                        '<span class="rs-idx" style="background:' + m.color + '">' + (i + 1) + '</span>' +
+                        s.from + ' → ' + s.to +
+                        '<span class="rs-dur">' + m.label + ' · ' + s.dist + ' · ' + s.time + '</span></button>';
+                });
+                list.innerHTML = html;
+            }
+
+            renderRouteSummary();
+            drawSelectedRoutes();
+        }
+
+        function renderRouteSummary() {
+            const box = document.getElementById('route-summary');
+            if (!box) return;
+            const segs = selectedRouteSegments();
+            const color = DAY_COLORS[RM.day] || DAY_COLOR_HOTEL;
+            const dayLabel = (itineraryData[RM.day - 1] ? itineraryData[RM.day - 1].day : ('Day ' + RM.day));
+
+            if (!segs.length) {
+                box.innerHTML = '<div class="rs-empty">這一天沒有分段路線資料。</div>';
+                return;
+            }
+
+            if (RM.sel !== 'all') {
+                const s = segs[0];
+                const m = ROUTE_MODE_META[s.mode] || ROUTE_MODE_META.walk;
+                const accLabel = (ACC_LEVELS[s.acc] || ACC_LEVELS.full).label;
+                box.innerHTML =
+                    '<div class="rs-head"><span class="rs-day" style="background:' + color + '">' + dayLabel + '</span>' +
+                    '<span class="rs-title">第 ' + (RM.sel + 1) + ' 段 / ' + s.title + '</span></div>' +
+                    '<div class="rs-route">' + s.from + '<span class="rs-arrow">→</span>' + s.to + '</div>' +
+                    '<div class="rs-meta">' +
+                        '<span class="rs-pill">' + m.label + '</span>' +
+                        '<span class="rs-pill">' + s.dist + '</span>' +
+                        '<span class="rs-pill">約 ' + s.time + '</span>' +
+                        '<span class="rs-pill">負擔 ' + s.effort + '</span>' +
+                    '</div>' +
+                    (s.via && s.via.length ? '<div class="rs-way"><b>途經點：</b>' + s.via.join(' → ') + '</div>' : '') +
+                    '<div class="rs-acc">♿ ' + accLabel + '　' + s.note + '</div>';
+                return;
+            }
+
+            // 該日全部
+            let rows = '';
+            let totalMin = 0;
+            segs.forEach(function (s, i) {
+                const m = ROUTE_MODE_META[s.mode] || ROUTE_MODE_META.walk;
+                const n = parseInt(String(s.time), 10);
+                if (!isNaN(n)) totalMin += n;
+                rows += '<div class="rs-row">' +
+                    '<span class="rs-idx" style="background:' + m.color + '">' + (i + 1) + '</span>' +
+                    '<span class="rs-row-main">' + s.from + ' → ' + s.to + '</span>' +
+                    '<span class="rs-row-meta">' + m.label + ' · ' + s.dist + ' · ' + s.time + '</span></div>';
+            });
+            box.innerHTML =
+                '<div class="rs-head"><span class="rs-day" style="background:' + color + '">' + dayLabel + '</span>' +
+                '<span class="rs-title">當日全部 ' + segs.length + ' 段</span></div>' +
+                '<div class="rs-list">' + rows + '</div>' +
+                '<div class="rs-way" style="margin-top:6px"><b>合計移動時間：</b>約 ' + totalMin + ' 分（不含景點停留）</div>';
+        }
+
+        function renderRouteLegend() {
+            const box = document.getElementById('route-legend');
+            if (!box) return;
+            let html = '';
+            ['walk', 'mrt', 'grab', 'cablecar'].forEach(function (k) {
+                const m = ROUTE_MODE_META[k];
+                html += '<span class="rl-item"><span class="rl-line" style="background:' + m.color + '"></span>' + m.label + '</span>';
+            });
+            html += '<span class="rl-item"><span class="rl-line" style="background:#6E8B6B;height:0;border-top:2px dashed #6E8B6B"></span>無障礙全程通行</span>';
+            box.innerHTML = html;
+        }
+
+        function selectRouteDay(day) {
+            RM.day = day;
+            RM.sel = 'all';
+            renderRouteUI();
+        }
+
+        function selectRouteSeg(seg) {
+            RM.sel = seg;
+            renderRouteUI();
+        }
+
+        /* ---------------- API Key 面板 ---------------- */
+        function toggleRouteKeyPanel() {
+            const bar = document.getElementById('route-keybar');
+            if (!bar) return;
+            const open = !bar.classList.contains('open');
+            bar.classList.toggle('open', open);
+            const head = bar.querySelector('.route-key-head');
+            if (head) head.setAttribute('aria-expanded', String(open));
+        }
+
+        function initRouteKeyHint() {
+            const input = document.getElementById('route-key-input');
+            const hint = document.getElementById('route-key-hint');
+            if (input) input.value = getStoredRouteKey();
+            if (!hint) return;
+            const stored = getStoredRouteKey();
+            const cfgKey = (getConfig().GOOGLE_MAPS_API_KEY || '').trim();
+            if (stored && !isPlaceholderKey(stored)) {
+                hint.textContent = '目前使用：本機儲存的 Key（' + stored.slice(0, 6) + '…' + stored.slice(-4) + '）';
+            } else if (cfgKey && !isPlaceholderKey(cfgKey)) {
+                hint.textContent = '目前使用：config.js 內的 Key。若要換成自己的 Key，填入後按儲存。';
+            } else {
+                hint.textContent = '目前尚未設定 Key，路線圖以座標示意圖顯示（功能不受影響）。';
+            }
+        }
+
+        function saveRouteKey() {
+            const input = document.getElementById('route-key-input');
+            if (!input) return;
+            const v = (input.value || '').trim();
+            if (!v) { alert('請先貼上 Google Maps API Key'); return; }
+            if (isPlaceholderKey(v)) { alert('這看起來不是有效的 Key（長度至少 20 字元、以 AIza 開頭）。'); return; }
+            try { localStorage.setItem(ROUTE_KEY_STORAGE, v); } catch (e) { alert('此瀏覽器無法儲存（可能為無痕模式）。'); return; }
+            location.reload();
+        }
+
+        function clearRouteKey() {
+            try { localStorage.removeItem(ROUTE_KEY_STORAGE); } catch (e) { /* 忽略 */ }
+            const input = document.getElementById('route-key-input');
+            if (input) input.value = '';
+            location.reload();
+        }
+
+        /* ---------------- 路線圖：Google Maps ---------------- */
+        function initRouteMap() {
+            if (RM.init) return;
+            const el = document.getElementById('route-map');
+            if (!el) return;
+
+            // 沒有可用的 Key（或 file:// 開啟）→ 直接用座標示意圖
+            if (location.protocol === 'file:' || isPlaceholderKey(getApiKey())) {
+                RM.init = true;
+                showRouteFallback();
+                return;
+            }
+            if (RM.loading) return;
+            RM.loading = true;
+
+            loadGoogleMapsSdk().then(function () {
+                // SDK 載入了，但金鐘已被 Google 拒絕（referrer / 未啟用 API）→ 直接用示意圖
+                if (GM.lastErrorCode) {
+                    RM.loading = false;
+                    RM.init = true;
+                    RM.tileFailed = true;
+                    showRouteFallback();
+                    renderRouteFallback(selectedRouteSegments());
+                    return;
+                }
+                try {
+                    createRouteMapInstance();
+                    RM.init = true;
+                    RM.loading = false;
+                    hideRouteFallback();
+                    drawSelectedRoutes();
+                } catch (e) {
+                    RM.loading = false;
+                    RM.init = true;
+                    RM.tileFailed = true;
+                    showRouteFallback();
+                    renderRouteFallback(selectedRouteSegments());
+                }
+            }).catch(function () {
+                RM.loading = false;
+                RM.init = true;
+                RM.tileFailed = true;
+                showRouteFallback();
+                renderRouteFallback(selectedRouteSegments());
+            });
+        }
+
+        function createRouteMapInstance() {
+            if (RM.map) {
+                RM.renderers.forEach(function (r) { try { r.setMap(null); } catch (e) {} });
+                RM.overlays.forEach(function (o) { try { o.setMap(null); } catch (e) {} });
+            }
+            RM.renderers = [];
+            RM.overlays = [];
+
+            const cfg = getConfig();
+            const opts = {
+                center: { lat: 1.2950, lng: 103.8600 },
+                zoom: 13,
+                disableDefaultUI: true,
+                zoomControl: true,
+                zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
+                clickableIcons: false,
+                gestureHandling: 'greedy',
+                backgroundColor: '#F5F5F0'
+            };
+            if (cfg.MAP_ID) opts.mapId = cfg.MAP_ID;
+            else opts.styles = MUJI_MAP_STYLE;
+
+            RM.map = new google.maps.Map(document.getElementById('route-map'), opts);
+            if (!RM.dirService) RM.dirService = new google.maps.DirectionsService();
+
+            /*
+             * 底圖健康檢查：金鐘的網域限制（RefererNotAllowed）或 API 未啟用時，
+             * SDK 會正常載入、地圖物件也建得起來，但底圖全毀 → 使用者只看到一片空白。
+             * 這裡監看 tilesloaded，6 秒內沒收到就自動改用座標示意圖，不讓區塊壞掉。
+             */
+            RM.tileFailed = false;
+            if (RM.tileTimer) { clearTimeout(RM.tileTimer); RM.tileTimer = null; }
+            const tl = RM.map.addListener('tilesloaded', function () {
+                google.maps.event.removeListener(tl);
+                if (RM.tileTimer) { clearTimeout(RM.tileTimer); RM.tileTimer = null; }
+            });
+            RM.tileTimer = setTimeout(function () {
+                RM.tileFailed = true;
+                showRouteFallback();
+                renderRouteFallback(selectedRouteSegments());
+            }, 6000);
+        }
+
+        function clearRouteDrawings() {
+            RM.renderers.forEach(function (r) { try { r.setMap(null); } catch (e) {} });
+            RM.overlays.forEach(function (o) { try { o.setMap(null); } catch (e) {} });
+            RM.renderers = [];
+            RM.overlays = [];
+        }
+
+        function drawSelectedRoutes() {
+            const segs = selectedRouteSegments();
+            const useGoogle = RM.map && window.google && window.google.maps && RM.view !== 'schematic' && !RM.tileFailed;
+
+            if (!useGoogle) {
+                showRouteFallback();
+                renderRouteFallback(segs);
+                updateRouteViewBtn();
+                return;
+            }
+
+            hideRouteFallback();
+            updateRouteViewBtn();
+            clearRouteDrawings();
+            if (!segs.length) return;
+
+            const bounds = new google.maps.LatLngBounds();
+            let pending = segs.length;
+
+            segs.forEach(function (s, i) {
+                const m = ROUTE_MODE_META[s.mode] || ROUTE_MODE_META.walk;
+                s.pts.forEach(function (p) { bounds.extend({ lat: p[0], lng: p[1] }); });
+
+                const origin = { lat: s.pts[0][0], lng: s.pts[0][1] };
+                const dest = { lat: s.pts[s.pts.length - 1][0], lng: s.pts[s.pts.length - 1][1] };
+                const waypoints = s.pts.slice(1, -1).map(function (p) {
+                    return { location: { lat: p[0], lng: p[1] }, stopover: false };
+                });
+
+                addRouteEndpoint(origin, m.color, i + 1);
+                addRouteEndpoint(dest, m.color, i + 1);
+
+                const done = function () { pending--; if (pending === 0) RM.map.fitBounds(bounds, { top: 40, right: 30, bottom: 40, left: 30 }); };
+
+                if (!m.travel) {           // 纜車：Google 無此交通模式，畫直線
+                    drawRoutePolyline(s.pts, m.color, true);
+                    done();
+                    return;
+                }
+
+                RM.dirService.route({
+                    origin: origin,
+                    destination: dest,
+                    waypoints: waypoints,
+                    travelMode: google.maps.TravelMode[m.travel],
+                    provideRouteAlternatives: false
+                }, function (res, status) {
+                    if (status === 'OK' && res && res.routes && res.routes.length) {
+                        const r = new google.maps.DirectionsRenderer({
+                            map: RM.map,
+                            directions: res,
+                            suppressMarkers: true,
+                            preserveViewport: true,
+                            polylineOptions: {
+                                strokeColor: m.color,
+                                strokeWeight: 5,
+                                strokeOpacity: 0.9
+                            }
+                        });
+                        RM.renderers.push(r);
+                    } else {
+                        // Directions 服務未啟用或查無路線 → 退回座標折線，路線照樣看得到
+                        drawRoutePolyline(s.pts, m.color, true);
+                    }
+                    done();
+                });
+            });
+        }
+
+        function drawRoutePolyline(pts, color, dashed) {
+            const line = new google.maps.Polyline({
+                path: pts.map(function (p) { return { lat: p[0], lng: p[1] }; }),
+                map: RM.map,
+                strokeColor: color,
+                strokeOpacity: dashed ? 0 : 0.9,
+                strokeWeight: 5,
+                icons: dashed ? [{
+                    icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3, strokeColor: color },
+                    offset: '0',
+                    repeat: '12px'
+                }] : null
+            });
+            RM.overlays.push(line);
+        }
+
+        function addRouteEndpoint(pos, color, label) {
+            const svg =
+                '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">' +
+                '<circle cx="9" cy="9" r="7.5" fill="' + color + '" stroke="#FFFFFF" stroke-width="2"/>' +
+                '<text x="9" y="9" text-anchor="middle" dy="0.35em" font-family="Arial" font-size="8" font-weight="700" fill="#FFFFFF">' + label + '</text>' +
+                '</svg>';
+            const marker = new google.maps.Marker({
+                position: pos,
+                map: RM.map,
+                icon: {
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+                    scaledSize: new google.maps.Size(18, 18),
+                    anchor: new google.maps.Point(9, 9)
+                },
+                optimized: false,
+                zIndex: 5
+            });
+            RM.overlays.push(marker);
+        }
+
+        function showRouteFallback() {
+            const f = document.getElementById('route-fallback');
+            if (f) f.classList.add('show');
+            updateRouteViewBtn();
+        }
+
+        function hideRouteFallback() {
+            const f = document.getElementById('route-fallback');
+            if (f) f.classList.remove('show');
+        }
+
+        function updateRouteViewBtn() {
+            const label = document.getElementById('route-view-label');
+            const btn = document.querySelector('.route-view-toggle button');
+            if (!label || !btn) return;
+            const googleOk = !!(RM.map && window.google && window.google.maps) && !RM.tileFailed;
+            if (!googleOk) {
+                label.textContent = '示意圖';
+                btn.style.opacity = '.55';
+                btn.title = '設定 API Key 後可切換為 Google 地圖';
+                return;
+            }
+            btn.style.opacity = '1';
+            if (RM.view === 'schematic') {
+                label.textContent = '地圖';
+                btn.title = '切換回 Google 地圖';
+            } else {
+                label.textContent = '示意圖';
+                btn.title = '切換為座標示意圖';
+            }
+        }
+
+        function toggleRouteView() {
+            const googleOk = !!(RM.map && window.google && window.google.maps) && !RM.tileFailed;
+            if (!googleOk) {
+                // 地圖無法使用時，這個按鈕就是「開啟 Key 設定」的入口
+                const bar = document.getElementById('route-keybar');
+                if (bar && !bar.classList.contains('open')) toggleRouteKeyPanel();
+                bar && bar.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                return;
+            }
+            RM.view = (RM.view === 'schematic') ? 'auto' : 'schematic';
+            drawSelectedRoutes();
+        }
+
+        /* ---------------- 路線圖：座標示意圖（無 Key 備援） ---------------- */
+        function renderRouteFallback(segs) {
+            const box = document.getElementById('route-fallback');
+            if (!box) return;
+
+            if (!segs || !segs.length) {
+                box.innerHTML = '<div class="rf-empty">這一天沒有分段路線資料</div>';
+                return;
+            }
+
+            const W = 360, H = 260, PAD = 30;
+            let minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
+            segs.forEach(function (s) {
+                s.pts.forEach(function (p) {
+                    if (p[0] < minLat) minLat = p[0];
+                    if (p[0] > maxLat) maxLat = p[0];
+                    if (p[1] < minLng) minLng = p[1];
+                    if (p[1] > maxLng) maxLng = p[1];
+                });
+            });
+            const dLat = Math.max(maxLat - minLat, 0.004);
+            const dLng = Math.max(maxLng - minLng, 0.004);
+            const scale = Math.min((W - PAD * 2) / dLng, (H - PAD * 2) / dLat);
+            const offX = (W - dLng * scale) / 2;
+            const offY = (H - dLat * scale) / 2;
+            const px = function (p) { return offX + (p[1] - minLng) * scale; };
+            const py = function (p) { return H - offY - (p[0] - minLat) * scale; };
+
+            let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="路線座標示意圖">';
+            svg += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#F5F5F0"/>';
+
+            // 淡淡方格底
+            for (let gx = 0; gx < W; gx += 40) {
+                svg += '<line x1="' + gx + '" y1="0" x2="' + gx + '" y2="' + H + '" stroke="#E9E9E2" stroke-width="0.6"/>';
+            }
+            for (let gy = 0; gy < H; gy += 40) {
+                svg += '<line x1="0" y1="' + gy + '" x2="' + W + '" y2="' + gy + '" stroke="#E9E9E2" stroke-width="0.6"/>';
+            }
+
+            segs.forEach(function (s, i) {
+                const m = ROUTE_MODE_META[s.mode] || ROUTE_MODE_META.walk;
+                const d = s.pts.map(function (p, k) {
+                    return (k === 0 ? 'M' : 'L') + px(p).toFixed(1) + ' ' + py(p).toFixed(1);
+                }).join(' ');
+                const dashed = (s.mode === 'cablecar' || s.mode === 'grab');
+                svg += '<path d="' + d + '" fill="none" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>';
+                svg += '<path d="' + d + '" fill="none" stroke="' + m.color + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"' +
+                    (dashed ? ' stroke-dasharray="5 4"' : '') + '/>';
+
+                // 起點編號
+                const a = s.pts[0];
+                svg += '<circle cx="' + px(a).toFixed(1) + '" cy="' + py(a).toFixed(1) + '" r="7" fill="' + m.color + '" stroke="#FFFFFF" stroke-width="1.6"/>';
+                svg += '<text x="' + px(a).toFixed(1) + '" y="' + py(a).toFixed(1) + '" text-anchor="middle" dy="0.35em" font-family="Arial" font-size="7.5" font-weight="700" fill="#FFFFFF">' + (i + 1) + '</text>';
+            });
+
+            // 終點只畫一次（最後一段的終點）
+            const last = segs[segs.length - 1];
+            const b = last.pts[last.pts.length - 1];
+            svg += '<circle cx="' + px(b).toFixed(1) + '" cy="' + py(b).toFixed(1) + '" r="4" fill="#FFFFFF" stroke="#8D7B68" stroke-width="1.8"/>';
+
+            // 單段時標上起訖名稱
+            if (segs.length === 1) {
+                const s = segs[0];
+                const a0 = s.pts[0], b0 = s.pts[s.pts.length - 1];
+                const ax = px(a0), ay = py(a0), bx = px(b0), by = py(b0);
+                const anchorA = ax > W * 0.6 ? 'end' : 'start';
+                const anchorB = bx > W * 0.6 ? 'end' : 'start';
+                svg += '<text x="' + (ax + (anchorA === 'end' ? -11 : 11)).toFixed(1) + '" y="' + (ay + 3).toFixed(1) +
+                    '" text-anchor="' + anchorA + '" font-family="Arial" font-size="9" font-weight="700" fill="#3F3A33">' + s.from + '</text>';
+                svg += '<text x="' + (bx + (anchorB === 'end' ? -9 : 9)).toFixed(1) + '" y="' + (by + 3).toFixed(1) +
+                    '" text-anchor="' + anchorB + '" font-family="Arial" font-size="9" font-weight="700" fill="#3F3A33">' + s.to + '</text>';
+            }
+
+            svg += '</svg>';
+
+            const dayColor = DAY_COLORS[RM.day] || DAY_COLOR_HOTEL;
+            const cap = segs.length === 1
+                ? (segs[0].from + ' → ' + segs[0].to)
+                : ('Day ' + RM.day + ' 全部 ' + segs.length + ' 段');
+
+            let reason = '未啟用 Google 地圖';
+            if (RM.tileFailed) reason = 'Google 地圖無法載入（金鐘的網域限制或 API 未啟用）';
+
+            box.innerHTML =
+                '<div class="rf-head">座標示意圖<span class="rf-sub">' + cap + '</span></div>' +
+                svg +
+                '<div class="rf-note">目前以<b>座標示意圖</b>顯示（' + reason + '）。' +
+                '路線的<b>相對位置與順序皆正確</b>，僅比例為示意；設定可用的 API Key 後即可切換為真實路網與 Google 步行路線。</div>';
+        }
 
         let currentDayIndex = 0;
         let currentSgdRate = 23.5;
@@ -1994,7 +2832,12 @@ sweep(document)})();</script>
             return (window.APP_CONFIG && typeof window.APP_CONFIG === 'object') ? window.APP_CONFIG : {};
         }
 
+        /**
+         * 取得可用的 API Key          * 優先序：① 使用者在本機輸入的 Key（localStorage）→ ② config.js 內的 Key         * 本機 Key 讓沒有修改檔案權限的人也能直接在地圖分頁啟用 Google 地圖。
+         */
         function getApiKey() {
+            const stored = getStoredRouteKey();
+            if (stored && !isPlaceholderKey(stored)) return stored;
             const key = getConfig().GOOGLE_MAPS_API_KEY;
             return (typeof key === 'string') ? key.trim() : '';
         }
@@ -3151,6 +3994,9 @@ sweep(document)})();</script>
             renderMapList();
             renderLegend();
             renderGuide();
+            renderRouteUI();
+            renderRouteLegend();
+            initRouteKeyHint();
             initLayersPanel();
             initTabs();
             fetchExchangeRate();
@@ -3187,6 +4033,13 @@ sweep(document)})();</script>
                                 initMap();
                             } else if (GM.map) {
                                 google.maps.event.trigger(GM.map, 'resize');
+                            }
+                            // 分段路線圖：首次切到地圖分頁才建立，節省 API 呼叫
+                            if (!RM.init) {
+                                initRouteMap();
+                            } else if (RM.map) {
+                                google.maps.event.trigger(RM.map, 'resize');
+                                drawSelectedRoutes();
                             }
                         }, 120);
                     }
