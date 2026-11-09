@@ -1044,6 +1044,50 @@ sweep(document)})();</script>
         .cl-del { color: #9A9A90; font-size: 11px; padding: 2px 4px; flex-shrink: 0; background: none; border: 0; cursor: pointer; }
         .cl-del:hover { color: #A35C5C; }
         .cl-item:focus-within { background: #F5F5F0; outline: 2px solid #C4B7A6; outline-offset: -2px; }
+
+        /* ---------- 資料表（交通費用精算） ---------- */
+        .dt-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #E6E6E0; border-radius: 6px; background: #FFF; }
+        .dt { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 11px; }
+        .dt.dt-wide { min-width: 780px; }
+        .dt th { background: #F5F5F0; color: #333333; font-weight: 600; text-align: left; padding: 8px 10px; border-bottom: 1px solid #E6E6E0; white-space: nowrap; font-size: 10px; letter-spacing: .02em; }
+        .dt td { padding: 8px 10px; border-bottom: 1px solid #F0EFEA; color: #5C5C5C; line-height: 1.6; vertical-align: top; }
+        .dt tr:last-child td { border-bottom: 0; }
+        .dt td b { color: #333333; font-weight: 600; }
+        .dt .dt-day { color: #8D7B68; font-weight: 600; white-space: nowrap; }
+        .dt .dt-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .dt tr.dt-total td { background: #FAFAF7; font-weight: 600; color: #333333; border-top: 1px solid #E6E6E0; }
+        .dt-hint { font-size: 10px; color: #9A9A90; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+        .pill { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 999px; border: 1px solid #E0DCD2; color: #8A8A80; white-space: nowrap; }
+        .pill.ok { background: #EEF3ED; border-color: #CFDCCD; color: #5E7A5B; }
+        .pill.warn { background: #F7F2E6; border-color: #E4D9BE; color: #8A7440; }
+        .pill.no { background: #F7EDEA; border-color: #E6D2CC; color: #9A5F4E; }
+
+        /* ---------- 行程內廁所小卡（原「景點廁所攻略」整合進行程） ---------- */
+        .wc-inline { margin-top: 6px; border: 1px solid #E6E6E0; border-left: 2px solid #C9BFAE; border-radius: 0 5px 5px 0; background: #FCFCFA; padding: 7px 9px; }
+        .wc-inline-head { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-bottom: 4px; }
+        .wc-inline-head i { color: #8D7B68; font-size: 10px; }
+        .wc-inline-title { font-size: 10px; font-weight: 700; color: #5C5C5C; letter-spacing: .02em; }
+        .wc-inline-grid { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; font-size: 10px; line-height: 1.6; }
+        .wc-inline-k { color: #9A9A90; white-space: nowrap; }
+        .wc-inline-v { color: #5C5C5C; min-width: 0; }
+        .wc-inline-v b { color: #333333; font-weight: 600; }
+        .wc-inline-src { font-size: 9px; color: #A8A89E; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #EDEBE6; }
+
+        /* ---------- 伴手禮 ---------- */
+        .sv-group { margin-bottom: 18px; }
+        .sv-group-head { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+        .sv-group-head i { color: #8D7B68; font-size: 13px; }
+        .sv-group-head h3 { font-family: "Noto Serif TC", serif; font-size: 14px; color: #333333; }
+        .sv-when { font-size: 9px; color: #8A8A80; background: #F5F5F0; border: 1px solid #E6E6E0; border-radius: 999px; padding: 1px 7px; margin-left: auto; white-space: nowrap; }
+        .sv-card { background: #FFF; border: 1px solid #E6E6E0; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; }
+        .sv-card-top { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; margin-bottom: 3px; }
+        .sv-name { font-size: 13px; font-weight: 600; color: #333333; }
+        .sv-price { font-size: 10px; color: #8D7B68; font-variant-numeric: tabular-nums; }
+        .sv-brand { font-size: 10px; color: #5C5C5C; margin-bottom: 4px; }
+        .sv-desc { font-size: 11px; line-height: 1.7; color: #5C5C5C; }
+        .sv-meta { font-size: 10px; line-height: 1.7; color: #7A7A70; margin-top: 5px; padding-top: 5px; border-top: 1px dashed #EDEBE6; }
+        .sv-meta b { color: #5C5C5C; font-weight: 600; }
+        .sv-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
     </style>
 </head>
 <body class="font-sans antialiased h-screen flex flex-col overflow-hidden bg-muji-bg">
@@ -1358,6 +1402,147 @@ sweep(document)})();</script>
         </section>
 
         <!-- Tab 5: INFO -->
+        <!-- Tab: SOUVENIR (伴手禮) -->
+        <section id="tab-souvenir" class="tab-content">
+            <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-2">伴手禮推薦</h2>
+            <p class="text-[11px] text-muji-text leading-relaxed mb-4">
+                依<b>購買地點</b>分組，方便對照行程動線順路採買。價位為 2026 年參考區間（SGD），實際以店家標價為準。
+            </p>
+
+            <div class="bg-muji-white rounded-md p-3 shadow-muji border border-muji-border mb-5">
+                <h3 class="text-[11px] font-medium text-muji-red mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i>入境台灣限制（重要）</h3>
+                <ul class="text-[10.5px] space-y-1.5 text-muji-text list-disc pl-4 leading-relaxed">
+                    <li><b class="text-muji-dark">肉乾、肉鬆、香腸等肉製品：一律禁止</b>帶回台灣（含真空包裝），違規首次罰 20 萬元。林志源、美珍香、胡振隆肉乾建議現場吃。</li>
+                    <li><b class="text-muji-dark">含肉調理包泡麵：</b>高溫滅菌軟式罐頭（鋁箔調理包）可帶；一般液態湯包需申報或禁止。</li>
+                    <li><b class="text-muji-dark">液體類（咖椰醬、叻沙醬、辣椒螃蟹醬）：</b>商業密封罐可帶；<b>隨身行李每瓶 ≤ 100ml</b>，超過請託運。</li>
+                    <li><b class="text-muji-dark">新鮮水果：禁止</b>；芒果乾等加工乾燥品可帶。零食餅乾 6 公斤內免申報。</li>
+                    <li><b class="text-muji-dark">藥品（虎標萬金油等）：</b>每種最多 12 個、合計不超過 36 個。</li>
+                </ul>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-group-head"><i class="fa-solid fa-store"></i><h3>牛車水 Chinatown</h3><span class="sv-when">Day 4 下午 14:30–15:30 順路</span></div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">肉乾（現場吃）</span><span class="sv-price">SGD 20–40／300g 起</span></div>
+                    <div class="sv-brand">林志源 Lim Chee Guan（1938 年創始）／美珍香／胡振隆</div>
+                    <div class="sv-desc">新加坡三大肉乾，炭烤香氣濃。林志源只有新加坡吃得到，可現場請店員剪小塊試吃。</div>
+                    <div class="sv-meta"><b>去哪買：</b>新橋路 New Bridge Road（牛車水站 NE4 A 出口步行 3 分）｜<b>營業：</b>09:00–22:00｜<b>機場：</b>樟宜有櫃位但<b>禁止帶回台灣</b>，建議現場吃</div>
+                    <div class="sv-tags"><span class="pill no">不可入境台灣</span><span class="pill">Day 4 順路</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">鹹蛋魚皮／鹹蛋洋芋片</span><span class="sv-price">SGD 8（小）／16（大）</span></div>
+                    <div class="sv-brand">IRVINS 黑鴨（最知名）／金鴨（7-11 就有）</div>
+                    <div class="sv-desc">酥脆炸魚皮裹上鹹蛋黃，加辣椒與咖哩葉，是新加坡最紅的零食。不敢吃魚皮可選鹹蛋洋芋片。</div>
+                    <div class="sv-meta"><b>去哪買：</b>牛車水市街、各大超市 FairPrice｜<b>機場：</b>T2／T3 有 IRVINS 櫃位（<b>一人限購 5 包</b>）｜<b>注意：</b>易碎，建議手提</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">Day 4 順路</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">黑松露薯片</span><span class="sv-price">SGD 10–12</span></div>
+                    <div class="sv-brand">Aroma Truffle &amp; Co</div>
+                    <div class="sv-desc">號稱世界最強松露片，100% 天然松露，原味與帕瑪乳酪兩種口味，包裝高級典雅。</div>
+                    <div class="sv-meta"><b>去哪買：</b>Chinatown Point 旗艦店（牛車水站直結）｜<b>機場：</b>樟宜、Plaza Singapura、Cold Storage 皆有</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">Day 4 順路</span></div>
+                </div>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-group-head"><i class="fa-solid fa-water"></i><h3>濱海灣／新達城</h3><span class="sv-when">Day 1–2 順路</span></div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">肉骨茶包</span><span class="sv-price">SGD 12–25／盒</span></div>
+                    <div class="sv-brand">松發 Song Fa（Day 2 午餐店）／黃亞細／發起人／Prima Taste</div>
+                    <div class="sv-desc">潮州派白胡椒湯頭，純香料包不含肉，回家加排骨就能重現。松發口味較溫和、黃亞細偏藥膳。</div>
+                    <div class="sv-meta"><b>去哪買：</b>松發門市（新達城 B1 #B1-132，Day 2 午餐順便買）／各大超市｜<b>機場：</b>超市區有售｜<b>注意：</b>純香料包可入境；含肉或骨頭需申報</div>
+                    <div class="sv-tags"><span class="pill ok">純香料可入境</span><span class="pill">Day 2 順路</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">叻沙／咖哩即煮醬</span><span class="sv-price">SGD 6–12／瓶</span></div>
+                    <div class="sv-brand">Prima Taste 百勝廚／三盅兩件</div>
+                    <div class="sv-desc">南洋香料加椰奶，回家煮叻沙火鍋或拌麵都方便。百勝廚的叻沙泡麵曾連兩年獲評全球最佳即食麵。</div>
+                    <div class="sv-meta"><b>去哪買：</b>各大超市 FairPrice／Cold Storage｜<b>機場：</b>超市區有售｜<b>注意：</b>液體，隨身 ≤100ml，建議託運</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill warn">液體需託運</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">TWG 茶葉禮盒</span><span class="sv-price">SGD 25–60</span></div>
+                    <div class="sv-brand">TWG Tea</div>
+                    <div class="sv-desc">新加坡自創精品茶品牌，包裝精美適合送禮。SILVER MOON（綠茶＋香草莓果）最暢銷。</div>
+                    <div class="sv-meta"><b>去哪買：</b>金沙購物中心 The Shoppes（Day 1 水舞秀旁）、ION Orchard、高島屋｜<b>機場：</b>T1–T4 皆有分店｜<b>注意：</b>茶葉屬加工植物產品，可入境</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">Day 1 順路</span></div>
+                </div>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-group-head"><i class="fa-solid fa-mosque"></i><h3>小印度／甘榜格南</h3><span class="sv-when">Day 3 下午 15:30–19:00 順路</span></div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">印度香料／Sari 服飾／手工藝</span><span class="sv-price">SGD 5–50</span></div>
+                    <div class="sv-brand">竹腳中心 Tekka Centre／小印度拱廊／甘貝爾巷</div>
+                    <div class="sv-desc">五彩繽紛的香料市場與傳統服飾店，是買印度風格商品的最佳地點。哈芝巷則有文青設計小店與土耳其燈飾。</div>
+                    <div class="sv-meta"><b>去哪買：</b>小印度站 NE7 C 出口（Day 3 順路）／武吉士站 EW12 步行至哈芝巷｜<b>注意：</b>香料粉屬乾燥磨粉植物製品，可入境</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">Day 3 順路</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">虎標萬金油／痠痛貼布</span><span class="sv-price">SGD 3–12</span></div>
+                    <div class="sv-brand">虎標 Tiger Balm（虎豹企業）</div>
+                    <div class="sv-desc">新加坡在地藥油，舒緩肌肉痠痛、頭痛、蚊蟲咬癢，居家旅行必備。便利商店就買得到。</div>
+                    <div class="sv-meta"><b>去哪買：</b>各便利商店 7-11／超市／藥妝店｜<b>機場：</b>免稅店有售｜<b>注意：</b>外用藥膏，每種最多 12 個、合計不超過 36 個</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">隨處可買</span></div>
+                </div>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-group-head"><i class="fa-solid fa-bag-shopping"></i><h3>烏節路 Orchard</h3><span class="sv-when">需另安排（或機場買）</span></div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">小 CK 包包／鞋</span><span class="sv-price">SGD 40–120</span></div>
+                    <div class="sv-brand">CHARLES &amp; KEITH（新加坡自創）／Pedro</div>
+                    <div class="sv-desc">新加坡本土時尚品牌，在當地買比台灣便宜不少。建議先上官網看款式，最後一天機場免稅店下手。</div>
+                    <div class="sv-meta"><b>去哪買：</b>ION Orchard、313@Somerset（索美塞站 NS23）｜<b>機場：</b>T1、T3 有門市｜<b>注意：</b>精品包建議手提</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">機場可買</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">Bacha Coffee 咖啡禮盒</span><span class="sv-price">SGD 20–60</span></div>
+                    <div class="sv-brand">Bacha Coffee（摩洛哥皇家咖啡）</div>
+                    <div class="sv-desc">被譽為「咖啡界愛馬仕」，超過 200 種阿拉比卡咖啡，包裝華麗適合送禮。新加坡限定「咖椰可頌」必吃。</div>
+                    <div class="sv-meta"><b>去哪買：</b>ION Orchard、濱海灣金沙｜<b>機場：</b>T3 為全球最大分店、T4 亦有｜<b>注意：</b>咖啡豆屬焙炒植物產品，可入境</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">機場可買</span></div>
+                </div>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-group-head"><i class="fa-solid fa-plane-departure"></i><h3>樟宜機場／Jewel</h3><span class="sv-when">Day 5 上午 10:00–12:30 最後補貨</span></div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">班蘭蛋糕（綠蛋糕）</span><span class="sv-price">SGD 16–30／盒</span></div>
+                    <div class="sv-brand">Bengawan Solo（最知名）</div>
+                    <div class="sv-desc">斑蘭葉戚風蛋糕，清香鬆軟，被稱為「新加坡必帶第一名」。另有鹹味斑蘭起司捲。</div>
+                    <div class="sv-meta"><b>去哪買：</b>市區各分店／<b>機場：</b>T3（<b>在出關前航廈外</b>）、T1、T2 內皆有櫃位｜<b>注意：</b>易壓壞、保存期短，<b>建議最後一天在機場買</b>，手提上機</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill warn">易壓壞</span><span class="pill">Day 5 順路</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">咖椰醬 Kaya</span><span class="sv-price">SGD 5–10／罐</span></div>
+                    <div class="sv-brand">亞坤 Ya Kun（國民老牌）／Toast Box／Glory（超市平價款）</div>
+                    <div class="sv-desc">椰漿＋蛋＋糖製成，抹吐司配南洋咖啡就是道地新加坡早餐。綠色為斑蘭口味、淺棕為原味。</div>
+                    <div class="sv-meta"><b>去哪買：</b>亞坤門市（牛車水創始總店）／各大超市｜<b>機場：</b>超市區有售｜<b>注意：</b>不含防腐劑，開封後冷藏；液體隨身 ≤100ml</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill warn">液體需託運</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">魚尾獅周邊／星巴克魚尾獅小熊</span><span class="sv-price">SGD 8–35</span></div>
+                    <div class="sv-brand">星巴克／Beryl's 魚尾獅杏仁巧克力／各紀念品店</div>
+                    <div class="sv-desc">魚尾獅磁鐵、鑰匙圈、模型，以及 Beryl's 魚尾獅造型杏仁巧克力，最具紀念性。</div>
+                    <div class="sv-meta"><b>去哪買：</b>魚尾獅公園周邊（Day 2 順路）、牛車水市街｜<b>機場：</b>Jewel 與各航廈紀念品店｜<b>注意：</b>巧克力高溫易融，建議手提</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">Day 2 順路</span></div>
+                </div>
+                <div class="sv-card">
+                    <div class="sv-card-top"><span class="sv-name">美祿 Milo／南洋即溶咖啡</span><span class="sv-price">SGD 5–15</span></div>
+                    <div class="sv-brand">Milo（美祿恐龍）／OWL 貓頭鷹</div>
+                    <div class="sv-desc">東南亞經典飲品，美祿恐龍是當地咖啡店招牌。OWL 椰糖咖啡將南洋咖啡香與椰糖清甜結合。</div>
+                    <div class="sv-meta"><b>去哪買：</b>各大超市 FairPrice／VivoCity 的 FairPrice Xtra（一站式購足）｜<b>機場：</b>超市區有售</div>
+                    <div class="sv-tags"><span class="pill ok">可入境台灣</span><span class="pill">超市可買</span></div>
+                </div>
+            </div>
+
+            <p class="text-[10px] text-muji-text/60 leading-relaxed mt-4">
+                <i class="fa-solid fa-circle-info mr-1"></i>價位與營業時間為 2026 年查證之參考值，實際以店家公告為準。入境規定依台灣農業部動植物防疫檢疫署與財政部關務署公告整理。
+            </p>
+        </section>
+
         <section id="tab-info" class="tab-content">
             <h2 class="font-serif text-xl text-muji-dark border-b-2 border-muji-brown inline-block pb-1 mb-6">實用資訊</h2>
 
@@ -1397,6 +1582,79 @@ sweep(document)})();</script>
                     <li><strong class="text-muji-dark">市容法規：</strong> 亂丟垃圾、隨地吐痰、未沖馬桶皆會被重罰。</li>
                     <li><strong class="text-muji-dark">醫療安檢：</strong> 心臟節律器患者過安檢務必出示識別卡，要求人工手檢；腹膜透析液建議攜帶完整處方箋證明。</li>
                 </ul>
+            </div>
+
+            <!-- 交通費用精算 -->
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mt-4">
+                <h3 class="text-sm font-medium text-muji-dark mb-1"><i class="fa-solid fa-coins text-muji-brown mr-2"></i>交通費用精算</h3>
+                <p class="text-[10.5px] text-muji-text leading-relaxed mb-3">
+                    8 人家族 5 天 4 夜。匯率基準 <b>1 SGD ≈ 24.5 TWD</b>。策略：Day 1／Day 5 有大件行李訂「13 人座單程接送機」，Day 2～Day 4 市區無行李分叫「2 台 4 人座 JustGrab」最划算。
+                </p>
+                <div class="dt-wrap">
+                    <table class="dt dt-wide">
+                        <thead><tr><th>天數</th><th>核心交通動線</th><th>方案A 全 Grab</th><th>方案B 全包車</th><th>方案C 混搭</th><th>混搭省下</th><th>推薦方案</th></tr></thead>
+                        <tbody>
+                            <tr><td class="dt-day">Day 1</td><td>機場 → 飯店 → 濱海灣花園 → 金沙水舞 → 老巴剎 → 飯店</td><td class="dt-num">SGD 135</td><td class="dt-num">SGD 280</td><td class="dt-num"><b>SGD 140</b></td><td class="dt-num">SGD 140</td><td>13 人座接機 ＋ 晚間 2 台 Grab</td></tr>
+                            <tr><td class="dt-day">Day 2</td><td>飯店 → 魚尾獅 → 新達城（松發／鴨子船）→ 飯店午休 → 珍寶海鮮 → 飯店</td><td class="dt-num">SGD 80</td><td class="dt-num">SGD 350</td><td class="dt-num"><b>SGD 80</b></td><td class="dt-num">SGD 270</td><td>全程叫 2 台 Grab</td></tr>
+                            <tr><td class="dt-day">Day 3</td><td>飯店 → 動物園 → 飯店午休 → 小印度 → 甘榜格南 → 飯店</td><td class="dt-num">SGD 190</td><td class="dt-num">SGD 360</td><td class="dt-num"><b>SGD 190</b></td><td class="dt-num">SGD 170</td><td>叫 2 台 Grab（唯一可考慮包車日）</td></tr>
+                            <tr><td class="dt-day">Day 4</td><td>飯店 → 港灣纜車站 → 聖淘沙 → 飯店午休 → 牛車水 → 飯店</td><td class="dt-num">SGD 130</td><td class="dt-num">SGD 350</td><td class="dt-num"><b>SGD 130</b></td><td class="dt-num">SGD 220</td><td>全程叫 2 台 Grab</td></tr>
+                            <tr><td class="dt-day">Day 5</td><td>飯店退房 → 星耀樟宜 → 樟宜機場返台</td><td class="dt-num">SGD 85</td><td class="dt-num">SGD 85</td><td class="dt-num"><b>SGD 85</b></td><td class="dt-num">SGD 0</td><td>預訂 13 人座單程送機</td></tr>
+                            <tr class="dt-total"><td class="dt-day">5 天總計</td><td>共約 12～13 趟移動</td><td class="dt-num">SGD 620</td><td class="dt-num">SGD 1,425</td><td class="dt-num">SGD 625</td><td class="dt-num">SGD 800</td><td>混搭最推薦</td></tr>
+                            <tr class="dt-total"><td class="dt-day">每人平均</td><td>8 人分攤 5 天交通費</td><td class="dt-num">SGD 77.5</td><td class="dt-num">SGD 178.1</td><td class="dt-num">SGD 78.1</td><td class="dt-num">SGD 100</td><td>約 NT$ 1,914／人</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="dt-hint"><i class="fa-solid fa-arrows-left-right"></i>表格可左右滑動檢視完整欄位</p>
+                <p class="text-[10px] text-muji-text/70 leading-relaxed mt-2">
+                    <b>混搭方案合計約 SGD 625（約 NT$ 15,313）</b>，比全包車省下約 SGD 800（約 NT$ 19,600）。
+                </p>
+            </div>
+
+            <!-- 大眾運輸票價參考 -->
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mt-4">
+                <h3 class="text-sm font-medium text-muji-dark mb-3"><i class="fa-solid fa-train-subway text-muji-brown mr-2"></i>大眾運輸票價參考</h3>
+                <div class="dt-wrap">
+                    <table class="dt">
+                        <thead><tr><th>工具</th><th>票價（SGD）</th><th>說明</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>MRT 地鐵</b></td><td class="dt-num">1.28 起</td><td>依距離計費，一般 1.28～2.0；營運 05:30–00:00。可用感應式信用卡／EZ-Link</td></tr>
+                            <tr><td><b>公車</b></td><td class="dt-num">0.99–2.60</td><td>依里程計費，上下車皆須刷卡；前門上車</td></tr>
+                            <tr><td><b>計程車</b></td><td class="dt-num">起跳 4.6</td><td>機場附加費 5～8；尖峰加 25%、深夜加 50%</td></tr>
+                            <tr><td><b>Grab 叫車</b></td><td class="dt-num">20–40</td><td>機場到市區約 20；市區短程約 8～15。尖峰浮動加價</td></tr>
+                            <tr><td><b>EZ-Link 卡</b></td><td class="dt-num">10（含 5 儲值）</td><td>製卡費 5 不退；停留短建議直接用信用卡感應</td></tr>
+                            <tr><td><b>聖淘沙纜車</b></td><td class="dt-num">35</td><td>花柏山線＋聖淘沙線；營運 08:45–22:00</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="dt-hint"><i class="fa-solid fa-arrows-left-right"></i>表格可左右滑動檢視完整欄位</p>
+            </div>
+
+            <!-- Grab 上下車點速查 -->
+            <div class="bg-muji-white rounded-md p-4 shadow-muji border border-muji-border mt-4">
+                <h3 class="text-sm font-medium text-muji-dark mb-1"><i class="fa-solid fa-car-side text-muji-brown mr-2"></i>Grab 上下車點速查</h3>
+                <p class="text-[10.5px] text-muji-text leading-relaxed mb-3">
+                    8 人分叫 2 台 Grab 的最佳上／下車定位點，選對地點可少走很多路。
+                </p>
+                <div class="dt-wrap">
+                    <table class="dt dt-wide">
+                        <thead><tr><th>天數</th><th>景點</th><th>叫車輸入關鍵字</th><th>為什麼選這裡（少走路）</th><th>最近冷氣廁所</th></tr></thead>
+                        <tbody>
+                            <tr><td class="dt-day">Day 1–5</td><td><b>住宿飯店</b></td><td>PARKROYAL COLLECTION Marina Bay (Main Lobby Drop-off)</td><td>1 樓車道有遮雨棚且空間大，2 台 Grab 可同時停靠，搭電梯直達 4 樓大廳</td><td>1 樓車道後側、4 樓 Check-in 大廳</td></tr>
+                            <tr><td class="dt-day">Day 1</td><td><b>濱海灣花園</b></td><td>Gardens by the Bay - Main Entrance / Conservatory Drop-off</td><td>直接停在花穹與雲霧林售票大廳正前方，比搭地鐵少走 800 公尺</td><td>下車處正前方售票大廳旁（冷氣五星廁所）</td></tr>
+                            <tr><td class="dt-day">Day 1</td><td><b>老巴剎沙嗲街</b></td><td>Lau Pa Sat (Boon Tat Street / Robinson Road Pick-up)</td><td>定位文達街與羅敏申路交界口，下車走 30 秒就到沙嗲攤位區</td><td>老巴剎八角建築內靠近文達街角落</td></tr>
+                            <tr><td class="dt-day">Day 2</td><td><b>魚尾獅公園</b></td><td>One Fullerton (Taxi Stand / Drop-off Point)</td><td>千萬別定位公園草皮！定位 One Fullerton 下車後走平路 1 分鐘即達魚尾獅，完全免爬階梯</td><td>One Fullerton 商場內（星巴克／麥當勞後方）</td></tr>
+                            <tr><td class="dt-day">Day 2</td><td><b>新達城／鴨子船</b></td><td>Suntec City Tower 1 (Drop-off Point)</td><td>鴨子船櫃檯與松發肉骨茶都在 Tower 1／Tower 5 區，在此下車走最少路</td><td>Tower 1 的 1 樓與 B1 電梯廳旁商場廁所</td></tr>
+                            <tr><td class="dt-day">Day 2</td><td><b>珍寶海鮮</b></td><td>Riverside Point (Merchant Road Drop-off)</td><td>直接停在河坊坊商場大門口，走進去即達餐廳，免走克拉碼頭河畔階梯</td><td>Riverside Point 商場同樓層走廊洗手間</td></tr>
+                            <tr><td class="dt-day">Day 3</td><td><b>新加坡動物園</b></td><td>Singapore Zoo Pick-up / Drop-off Point (Car Park 2 Taxi Stand)</td><td>園區專屬計程車與 Grab 上下車有棚候車亭，設有座位區可讓長輩坐著等車</td><td>大門口售票處與 KFC 餐廳後方大型生態廁所</td></tr>
+                            <tr><td class="dt-day">Day 3</td><td><b>小印度竹腳中心</b></td><td>Tekka Centre (Serangoon Road / Bukit Timah Road)</td><td>停靠在竹腳中心旁下客點，下車即達 1 樓熟食區</td><td>緊鄰竹腳中心的「小印度 MRT」C/D 出口地下大廳</td></tr>
+                            <tr><td class="dt-day">Day 3</td><td><b>蘇丹回教堂／武吉士</b></td><td>Sultan Mosque (North Bridge Road) / Bugis Junction Taxi Stand</td><td>去程定北橋路下車看回教堂；回程逛完武吉士街，直接從 Bugis Junction 百貨計程車站叫車</td><td>Bugis Junction 百貨各樓層冷氣洗手間</td></tr>
+                            <tr><td class="dt-day">Day 4</td><td><b>港灣纜車站</b></td><td>HarbourFront Tower Two (Taxi / Grab Drop-off)</td><td>直接定位港灣第二大廈 1 樓門口，下車走進大廳搭電梯直達 15 樓纜車站</td><td>15 樓纜車月台大廳旁、或隔壁 VivoCity 百貨</td></tr>
+                            <tr><td class="dt-day">Day 4</td><td><b>牛車水麥士威</b></td><td>Maxwell Food Centre / Maxwell MRT Exit 1</td><td>定位麥士威熟食中心門口或對面 Maxwell MRT 1 號出口，平路直達天天海南雞飯</td><td>過馬路至全新「Maxwell MRT」地下大廳層（免刷卡）</td></tr>
+                            <tr><td class="dt-day">Day 5</td><td><b>星耀樟宜</b></td><td>Jewel Changi Airport (L2 Drop-off / T1 Departure)</td><td>送機司機直達 T1 出境大廳／星耀樟宜連通口，下推車即入館</td><td>星耀樟宜 B2～L5 各層電梯廳旁五星廁所</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="dt-hint"><i class="fa-solid fa-arrows-left-right"></i>表格可左右滑動檢視完整欄位</p>
             </div>
 
             <!-- 本地檔案：上傳與管理 -->
@@ -1475,6 +1733,11 @@ sweep(document)})();</script>
             <li class="flex-1">
                 <button class="nav-btn w-full flex flex-col items-center py-1 transition-colors" data-target="tab-lists">
                     <i class="fa-solid fa-check-square text-lg mb-1"></i><span>清單</span>
+                </button>
+            </li>
+            <li class="flex-1">
+                <button class="nav-btn w-full flex flex-col items-center py-1 transition-colors" data-target="tab-souvenir">
+                    <i class="fa-solid fa-gift text-lg mb-1"></i><span>伴手禮</span>
                 </button>
             </li>
             <li class="flex-1">
@@ -2169,8 +2432,11 @@ sweep(document)})();</script>
         function updateRouteViewBtn() {
             const label = document.getElementById('route-view-label');
             const btn = document.querySelector('.route-view-toggle button');
+            const wrap = document.getElementById('route-view-toggle');
             if (!label || !btn) return;
             const googleOk = !!(RM.map && window.google && window.google.maps) && !RM.tileFailed;
+            /* 只有 Google 底圖可用時才顯示切換鈕（否則示意圖是唯一顯示方式） */
+            if (wrap) wrap.style.display = googleOk ? '' : 'none';
             if (!googleOk) {
                 label.textContent = '示意圖';
                 btn.style.opacity = '.55';
@@ -4019,6 +4285,71 @@ sweep(document)})();</script>
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        /* ============================================================
+         *  景點廁所資訊（原「景點廁所攻略」整合進行程）
+         *  資料來源：使用者上傳 Excel「景點與交通站廁所全攻略」＋ 2026-11-09 網路查證
+         *  以「Day 索引 + 行程時間」對應，於該行程項目下方顯示小卡
+         * ============================================================ */
+        var TOILET_BY_EVENT = {
+            0: {
+                '13:25': { loc: '入境大廳／行李轉盤區兩側', free: '免費', acc: '有（自動門無障礙間、扶手齊全）', clean: '極佳（五星冷氣）', hours: '24 小時', note: '下機踏出空橋進入航廈長廊，每隔 50～80 公尺即有洗手間；領取行李的轉盤區兩側皆設有大型洗手間。建議在「排隊查驗護照（移民官）前」先帶長輩上一次。', src: '樟宜機場官網 changiairport.com（2026-11-09 查證）' },
+                '16:00': { loc: 'Marina Square 各樓層（B1、1～3 樓，近洗手間）', free: '免費', acc: '有（各樓層洗手間旁設無障礙間）', clean: '佳（百貨冷氣）', hours: '約 10:00–22:00（依商場）', note: '飯店與 Marina Square 以室內連通道相連，無需過馬路；各樓層洗手間旁多設有育嬰室。', src: 'Marina Square 官網 marinasquare.com.sg（2026-11-09 查證）' },
+                '18:15': { loc: '濱海灣花園售票大廳旁（溫室外）', free: '免費', acc: '有（全平坡、無障礙廁所寬敞）', clean: '極佳（冷氣開放）', hours: '約 09:00–21:00（依園區）', note: '【入館前】溫室外的「售票大廳旁」即有大型冷氣廁所。【館內】靠近「出口紀念品店」與「下層步道電梯旁」皆設有廁所。', src: 'Gardens by the Bay 官網（2026-11-09 查證）' },
+                '20:15': { loc: '金沙購物中心 The Shoppes（各樓層近電梯廳）', free: '免費', acc: '有（新加坡最高評價六星公廁）', clean: '極佳（六星級冷氣）', hours: '約 10:30–23:00（依商場）', note: '戶外木棧道廣場無廁所；請直接推開玻璃門走進背後的「金沙購物中心 (The Shoppes)」，每層樓靠近電梯廳與運河兩側皆有清楚指標。館內共有 36 間洗手間。', src: 'Marina Bay Sands 官網 marinabaysands.com（2026-11-09 查證）' },
+                '21:20': { loc: '金沙購物中心 The Shoppes（各樓層近電梯廳）', free: '免費', acc: '有（六星級無障礙間）', clean: '極佳（六星級冷氣）', hours: '約 10:30–23:00（依商場）', note: '宵夜前後可就近使用金沙購物中心洗手間；老巴剎（Lau Pa Sat）內亦有廁所，但地面偶有濕滑。', src: 'Marina Bay Sands 官網（2026-11-09 查證）' }
+            },
+            1: {
+                '08:30': { loc: '亞坤（Marina Square 分店）／商場各樓層洗手間', free: '免費（商場）', acc: '有（商場無障礙間）', clean: '佳（百貨冷氣）', hours: '約 10:00–22:00（依商場）', note: '亞坤為連鎖咖啡店，店內多無獨立廁所；請就近使用 Marina Square 商場洗手間（各樓層皆有）。', src: 'Marina Square 官網（2026-11-09 查證）' },
+                '09:30': { loc: 'One Fullerton 商場（面對魚尾獅雕像右手邊 1 分鐘）', free: '免費', acc: '有（商場內有電梯與無障礙間）', clean: '佳（商場有冷氣）', hours: '約 10:00–22:00（依商場）', note: '【最推薦】面對魚尾獅雕像往右手邊走 1 分鐘進入「One Fullerton 商場」（星巴克／麥當勞那棟），館內與地下室有冷氣廁所。【次選】魚尾獅後方橋墩下半地下室公廁（無冷氣）。', src: 'One Fullerton 商場（2026-11-09 查證）' },
+                '11:45': { loc: '新達城 Suntec City（各樓層，B1 電梯廳旁）', free: '免費', acc: '有（大型百貨無障礙標準）', clean: '極佳（百貨冷氣）', hours: '約 10:00–22:00（依商場）', note: '松發肉骨茶位於 B1 (#B1-132)，出餐廳走至 B1 電梯廳旁即有商場廁所；鴨子船報到處在 1 樓（Tower 1 & 5 之間），旁邊商場走廊即有洗手間。', src: 'Suntec City 官網 sunteccity.com.sg（2026-11-09 查證）' },
+                '12:15': { loc: '新達城 Suntec City B1（松發肉骨茶旁電梯廳）', free: '免費', acc: '有（百貨無障礙間）', clean: '極佳（百貨冷氣）', hours: '約 10:00–22:00（依商場）', note: '松發肉骨茶（Suntec 分店，3 Temasek Blvd #B1-132）營業 11:00–21:00；店內無獨立廁所，請用 B1 商場洗手間。', src: 'Song Fa 官網 songfa.com.sg（2026-11-09 查證）' },
+                '14:00': { loc: '新達城 Suntec City 1 樓（DUCKtours 櫃檯旁商場走廊）', free: '免費', acc: '有（百貨無障礙間）', clean: '極佳（百貨冷氣）', hours: '約 10:00–22:00（依商場）', note: '⚠️ 關鍵提醒：鴨子船航行約 60 分鐘「船上完全沒有廁所」！開船前 15 分鐘全體務必在 Tower 1 商場上完廁所。', src: 'Suntec City 官網（2026-11-09 查證）' },
+                '17:30': { loc: 'Riverside Point 商場（珍寶海鮮同樓層走道）', free: '免費', acc: '有（平層直達）', clean: '佳（商場冷氣）', hours: '約 10:00–22:00（依商場）', note: '餐廳位於 Riverside Point 商場內，走出餐廳店門進入商場室內走廊，順著指標走約 30 秒即可抵達該樓層共用洗手間。', src: 'Riverside Point 商場（2026-11-09 查證）' }
+            },
+            2: {
+                '08:30': { loc: '新加坡動物園大門口售票處與 KFC／Inuka Cafe 後方', free: '免費', acc: '有（全園區無障礙廁所與坡道）', clean: '極佳（五星叢林生態）', hours: '約 08:30–18:00（依園區）', note: '【大門口】售票處與餐廳（KFC、Inuka Cafe）後方有大型洗手間。【園區內】每個遊園車停靠站 (Tram Station 1~4) 旁、阿明餐廳旁、海洋動物劇場入口皆有廁所。', src: 'Mandai Wildlife Reserve 官網（2026-11-09 查證）' },
+                '09:15': { loc: '園區內各遊園車停靠站旁、阿明餐廳旁、海洋動物劇場入口', free: '免費', acc: '有（全園區無障礙廁所與坡道）', clean: '極佳（五星叢林生態）', hours: '約 08:30–18:00（依園區）', note: '⚠️ 關鍵提醒：中午準備叫車回飯店前，務必先在「大門口洗手間」上完廁所再上車（回市區車程約 30-40 分鐘）。', src: 'Mandai Wildlife Reserve 官網（2026-11-09 查證）' },
+                '15:30': { loc: '小印度地鐵站 (Little India MRT) C/D 出口地下大廳層（免刷卡）', free: '免費', acc: '有（MRT 設有無障礙電梯與廁所）', clean: '佳（MRT 大廳有空調）', hours: '約 05:30–00:00（依地鐵營運）', note: '【最推薦】走出竹腳中心大門，進入緊鄰的「小印度地鐵站」C/D 出口地下大廳層（免刷卡進站），使用地鐵站無障礙廁所。【次選】1 樓熟食區與濕巴剎交界處公廁（地板較濕）。', src: 'SMRT／LTA（2026-11-09 查證）' },
+                '16:15': { loc: '竹腳中心 (Tekka Centre) 1 樓熟食區與濕巴剎交界處公廁', free: '免費', acc: '普通（空間較窄）', clean: '尚可（傳統市場，地板易潮濕）', hours: '約 06:00–22:00（依攤商）', note: '傳統巴剎公廁地面容易潮濕，強烈建議搭電梯下小印度 MRT 大廳層如廁。', src: 'Tekka Centre（2026-11-09 查證）' },
+                '17:00': { loc: '蘇丹回教堂外圍（近北橋路 North Bridge Rd 與附屬禮堂側門）', free: '免費', acc: '尚可（部分區域需留意地面水漬）', clean: '尚可（自然通風）', hours: '約 09:00–17:00（依場所）', note: '回教堂洗手間旁設有穆斯林小淨洗腳區，地板較易有水漬，長輩行走請慢行；亦可於周邊咖啡廳消費借用。', src: 'Sultan Mosque（2026-11-09 查證）' },
+                '19:30': { loc: '武吉士街 (Bugis Street) 對面 Bugis Junction 百貨各樓層', free: '免費（百貨）', acc: '有（百貨公司等級）', clean: '極佳（百貨冷氣）', hours: '約 10:00–22:00（依商場）', note: '街市內公廁人多且需投幣；強烈建議過馬路（或走連通道）至對面的冷氣百貨「Bugis Junction (白沙浮商業城)」，每層樓皆有五星級百貨廁所。', src: 'Bugis Junction 官網（2026-11-09 查證）' }
+            },
+            3: {
+                '08:45': { loc: 'HarbourFront Tower 2 的 15 樓纜車月台大廳（刷卡口旁）', free: '免費', acc: '有（電梯直達、無障礙空間大）', clean: '極佳（五星辦公／百貨）', hours: '約 08:45–22:00（依纜車營運）', note: '【纜車站】搭電梯直達 HarbourFront Tower 2 的 15 樓纜車月台大廳，刷卡口旁即有景觀洗手間。【轉乘商場】相連的「怡豐城 (VivoCity)」每層樓皆有大型冷氣廁所。', src: 'Mount Faber Leisure 官網（2026-11-09 查證）' },
+                '09:30': { loc: 'HarbourFront Tower 2 的 15 樓纜車月台大廳（刷卡口旁）', free: '免費', acc: '有（電梯直達、無障礙空間大）', clean: '極佳（五星辦公／百貨）', hours: '約 08:45–22:00（依纜車營運）', note: '⚠️ 關鍵提醒：高空纜車車廂內無廁所（單程約 15 分鐘），上 15 樓月台後務必先上完廁所再排隊搭纜車！', src: 'Mount Faber Leisure 官網（2026-11-09 查證）' },
+                '10:00': { loc: '英比奧山頂纜車站 (Imbiah Lookout) 禮品店與遊客中心旁', free: '免費', acc: '有（無障礙設施完善）', clean: '佳（部分冷氣／通風）', hours: '約 09:00–21:00（依園區）', note: '【山頂起點】英比奧山頂纜車站下車出月台，禮品店與遊客中心旁即有大型冷氣洗手間。【山底終點】滑車滑到底部準備搭吊椅前，換票處與海灘轉運站 (Beach Station) 內皆有公廁。', src: 'Sentosa 官網（2026-11-09 查證）' },
+                '12:30': { loc: '麥士威熟食中心內（面向天天海南雞飯往建築最末端角落）', free: '免費', acc: '極佳（2022 年底全新啟用 MRT 廁所）', clean: '極佳（全新 MRT 冷氣）', hours: '約 07:00–22:00（依攤商）', note: '【最推薦長輩路線】走出熟食中心過斑馬線，即達全新「麥士威地鐵站 (Maxwell MRT)」1 號／2 號出口，搭電梯至地下大廳層（免刷卡）使用全新廁所。', src: 'Maxwell MRT／LTA（2026-11-09 查證）' },
+                '13:00': { loc: '麥士威熟食中心內（建築最末端角落）', free: '免費', acc: '極佳（2022 年底全新啟用 MRT 廁所）', clean: '極佳（全新 MRT 冷氣）', hours: '約 07:00–22:00（依攤商）', note: '熟食中心內面向天天海南雞飯往建築最末端角落走亦有公廁；Maxwell MRT 廁所極新穎乾淨且完全免刷卡即可在地下大廳使用。', src: 'Maxwell MRT／LTA（2026-11-09 查證）' },
+                '14:30': { loc: '佛牙寺側門無障礙入口（4 樓）／周邊老街', free: '免費', acc: '有（少數無障礙寺廟；4 樓到頂樓需樓梯或專人協助的電動椅）', clean: '佳（寺廟維護良好）', hours: '約 07:00–19:00（博物館 09:00–18:00）', note: '佛牙寺為少數無障礙寺廟，可走側門無障礙入口搭電梯直達 4 樓；周邊老街平坦。', src: '佛牙寺官網 btrts.org.sg／chinatown.sg（2026-11-09 查證）' },
+                '15:30': { loc: '牛車水地鐵站 (Chinatown MRT) 或唐城坊 (Chinatown Point) 百貨', free: '免費', acc: '有（電梯與扶手齊全）', clean: '佳（百貨／MRT 冷氣）', hours: '約 05:30–00:00（MRT）／10:00–22:00（百貨）', note: '逛街區推薦走進「牛車水地鐵站」或緊鄰的冷氣百貨「唐城坊 (Chinatown Point)」使用廁所。', src: 'Chinatown Point／SMRT（2026-11-09 查證）' },
+                '18:00': { loc: '了凡油雞飯（史密斯街店）內小型顧客廁所／唐城坊百貨', free: '免費', acc: '有（電梯與扶手齊全）', clean: '佳（百貨／MRT 冷氣）', hours: '約 10:00–22:00（依店家）', note: '了凡油雞飯（史密斯街店）內有小型顧客廁所；逛街區推薦走進「牛車水地鐵站」或緊鄰的冷氣百貨「唐城坊 (Chinatown Point)」。', src: 'Chinatown Point（2026-11-09 查證）' }
+            },
+            4: {
+                '09:00': { loc: '樟宜機場離境大廳（各航廈）', free: '免費', acc: '有（自動門無障礙間、扶手齊全）', clean: '極佳（五星級冷氣）', hours: '24 小時', note: '離境大廳各處皆有洗手間；建議在辦理登機與排隊查驗前先帶長輩使用。', src: '樟宜機場官網（2026-11-09 查證）' },
+                '09:30': { loc: '樟宜機場出境大廳（各航廈）', free: '免費', acc: '有（自動門無障礙間、扶手齊全）', clean: '極佳（五星級冷氣）', hours: '24 小時', note: '機場大廳步行範圍內洗手間密集；長輩再次提醒地勤人工手檢節律器。', src: '樟宜機場官網（2026-11-09 查證）' },
+                '10:00': { loc: '星耀樟宜 (Jewel) B2～L5 各層電梯廳旁', free: '免費', acc: '有（全自動感應、超大無障礙間）', clean: '極佳（五星級冷氣）', hours: '24 小時（多數店家 10:00–22:00）', note: '圍繞中央「雨漩渦 (Rain Vortex)」瀑布的外環商場走廊，B2 至 L5 每一層樓的「東西南北四個象限電梯廳旁」皆有五星級洗手間。', src: 'Jewel Changi Airport 官網 jewelchangiairport.com（2026-11-09 查證）' },
+                '11:00': { loc: '星耀樟宜 (Jewel) B2～L5 各層電梯廳旁', free: '免費', acc: '有（全自動感應、超大無障礙間）', clean: '極佳（五星級冷氣）', hours: '24 小時（多數店家 10:00–22:00）', note: '雨漩渦白天 10:00–22:00 運轉；森林谷觀景平台可搭電扶梯直達，各層皆有洗手間。', src: 'Jewel Changi Airport 官網（2026-11-09 查證）' },
+                '13:00': { loc: '樟宜機場出境管制區免稅店大街（每 50 公尺一處）', free: '免費', acc: '極佳（免稅店大街廁所極多）', clean: '極佳（五星級冷氣）', hours: '24 小時', note: '🚨 最高等級提醒：樟宜採「登機門前獨立安檢」。務必在「排隊過安檢前 5 分鐘」在免稅店走廊先上完廁所，否則進候機室後若想如廁需重新安檢！', src: '樟宜機場官網（2026-11-09 查證）' }
+            }
+        };
+
+        function toiletCardHtml(dayIndex, time) {
+            var t = (TOILET_BY_EVENT[dayIndex] || {})[time];
+            if (!t) return '';
+            return '<div class="wc-inline">'
+                + '<div class="wc-inline-head"><i class="fa-solid fa-restroom"></i><span class="wc-inline-title">廁所資訊</span></div>'
+                + '<div class="wc-inline-grid">'
+                + '<span class="wc-inline-k">位置</span><span class="wc-inline-v">' + t.loc + '</span>'
+                + '<span class="wc-inline-k">費用</span><span class="wc-inline-v">' + t.free + '</span>'
+                + '<span class="wc-inline-k">無障礙</span><span class="wc-inline-v">' + t.acc + '</span>'
+                + '<span class="wc-inline-k">乾淨度</span><span class="wc-inline-v">' + t.clean + '</span>'
+                + '<span class="wc-inline-k">開放時間</span><span class="wc-inline-v">' + t.hours + '</span>'
+                + '<span class="wc-inline-k">備註</span><span class="wc-inline-v">' + t.note + '</span>'
+                + '</div>'
+                + '<div class="wc-inline-src">資料來源：' + t.src + '</div>'
+                + '</div>';
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             initFontScale();
             renderFlightPanel();
@@ -4155,12 +4486,15 @@ sweep(document)})();</script>
                         <div class="acc-note-body"><b>建議走法：</b>${acc.route}${acc.note ? '<br>' + acc.note : ''}</div>
                     </div>` : '';
 
+                const wcHtml = toiletCardHtml(index, ev.time);
+
                 html += `
                 <div class="timeline-item relative pl-5 ${typeClass}">
                     <div class="text-xs font-bold text-muji-text mb-0.5 tracking-wide">${ev.time}</div>
                     <div class="text-[15px] ${titleColor} leading-tight mb-1.5">${ev.title}</div>
                     ${ev.desc ? `<div class="text-xs text-muji-text leading-relaxed p-2.5 bg-white rounded-md border border-muji-border shadow-sm">${ev.desc}</div>` : ''}
                     ${accHtml}
+                    ${wcHtml}
                 </div>`;
             });
 
